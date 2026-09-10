@@ -435,6 +435,35 @@
     reader.readAsText(file);
   }
 
+  // Lädt die Daten direkt aus dem localStorage des ME/CFS-Symptom-Trackers.
+  // Voraussetzung: beide Apps laufen auf derselben Origin (junk495.github.io).
+  function loadFromTracker() {
+    var prefix = 'mecfs_tagescheck_';
+    var list = [];
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (!key || key.indexOf(prefix) !== 0) continue;
+        try {
+          var entry = JSON.parse(localStorage.getItem(key));
+          if (entry && entry.datum) list.push(entry);
+        } catch (e) {
+          // beschädigte Einträge überspringen
+        }
+      }
+    } catch (e) {
+      // localStorage nicht verfügbar (z. B. Privatmodus)
+    }
+
+    if (!list.length) {
+      var status = document.getElementById('import-status');
+      if (status) status.textContent = 'Keine Tracker-Daten in diesem Browser gefunden.';
+      return;
+    }
+
+    loadRecords(list);
+  }
+
   // ---------------------------------------------------------------------------
   // Demo-Daten (deterministisch)
   // ---------------------------------------------------------------------------
@@ -1150,6 +1179,8 @@
     document.getElementById('demo-button').addEventListener('click', function () {
       loadRecords(buildDemo());
     });
+
+    document.getElementById('tracker-button').addEventListener('click', loadFromTracker);
 
     document.getElementById('baseline-toggle').addEventListener('change', function (e) {
       baselineOn = e.target.checked;

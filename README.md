@@ -2,13 +2,18 @@
 
 **🌐 Zur Live-App:** <a href="https://junk495.github.io/ME.CFS.graph/" target="_blank" rel="noopener noreferrer">https://junk495.github.io/ME.CFS.graph/</a>
 
-Eine eigenständige, rein lokale Web-Anwendung zur grafischen Auswertung der vom **ME/CFS-Symptom-Tracker** exportierten Daten (CSV oder JSON). Sie macht den Krankheitsverlauf sichtbar und bietet eine transparente, regelbasierte Orientierung zum Crash-Risiko (PEM).
+Eine eigenständige, rein lokale Web-Anwendung zur grafischen Auswertung der vom <a href="https://github.com/junk495/ME.CFS" target="_blank" rel="noopener noreferrer">ME/CFS-Symptom-Tracker</a> exportierten Daten (CSV oder JSON). Sie macht den Krankheitsverlauf sichtbar und bietet eine transparente, regelbasierte Orientierung zum Crash-Risiko (PEM).
+
+## Datenquelle
+
+Diese App erfasst selbst keine Daten. Die anzuzeigenden Werte stammen aus dem Projekt <a href="https://github.com/junk495/ME.CFS" target="_blank" rel="noopener noreferrer">https://github.com/junk495/ME.CFS</a> (ME/CFS-Symptom-Tracker) und werden aus dessen CSV-/JSON-Export importiert.
 
 ## Kernfunktionen
 
 * **Trend:** Beliebige Messwerte als Zeitreihe über die Tage – inklusive persönlicher Baseline (gleitender Median).
 * **Heatmap:** Alle Tage × Symptombereiche auf einen Blick (Farbcodierung 0–4).
 * **Crash-Risiko:** Nachvollziehbare, regelbasierte Ampel (stabil / beobachten / hohes Crash-Risiko) mit Begründung.
+* **Direkt aus dem Tracker:** Über „Aus Tracker laden" werden die Daten des ME/CFS-Symptom-Trackers per Tipp übernommen (gleicher Browser).
 * **100 % lokal:** Die Importdatei wird ausschließlich im Browser gelesen und verarbeitet. Es gibt kein Backend und keine Datenübertragung.
 * **Keine Abhängigkeiten:** Diagramme werden mit nativem Canvas gezeichnet – keine externen Bibliotheken.
 * **Offline-fähig:** Nach dem ersten Aufruf funktioniert die App ohne Internetverbindung (PWA).

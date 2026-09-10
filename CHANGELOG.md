@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.3.0 – 2026-09-10
+
+### Neu
+
+* **„Aus Tracker laden":** Die Daten des ME/CFS-Symptom-Trackers können jetzt direkt per Tipp übernommen werden (gleicher Browser, gleiche GitHub-Pages-Domain). Der CSV-/JSON-Import bleibt als Fallback erhalten.
+
 ## v2.2.0 – 2026-09-10
 
 ### Geändert
