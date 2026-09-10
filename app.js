@@ -1173,9 +1173,39 @@
     renderRisk();
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(function () {
+      var updateBanner = document.getElementById('update-banner');
+      var updateButton = document.getElementById('update-reload');
+      var waitingWorker = null;
+      var reloading = false;
+
+      navigator.serviceWorker.register('./sw.js').then(function (registration) {
+        registration.addEventListener('updatefound', function () {
+          var newWorker = registration.installing;
+          if (!newWorker) return;
+          newWorker.addEventListener('statechange', function () {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              waitingWorker = newWorker;
+              if (updateBanner) updateBanner.hidden = false;
+            }
+          });
+        });
+      }).catch(function () {
         // Offline-Cache ist optional; Fehler sind unkritisch.
       });
+
+      navigator.serviceWorker.addEventListener('controllerchange', function () {
+        if (reloading) return;
+        reloading = true;
+        window.location.reload();
+      });
+
+      if (updateButton) {
+        updateButton.addEventListener('click', function () {
+          if (waitingWorker) {
+            waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      }
     }
   }
 

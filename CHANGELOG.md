@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.1.0 – 2026-09-10
+
+### Behoben
+
+* **Update-Hinweis:** Die neue Version wird jetzt erkannt und als Hinweis „Neue Version verfügbar“ angezeigt. Nutzer:innen laden über den Button bewusst neu. Zuvor wurde der Service Worker zwar aktualisiert, der Hinweis fehlte aber, sodass der neue Stand ohne manuelles Neuladen nicht sichtbar wurde.
+
 ## v2.0.0 – 2026-09-10
 
 ### Geändert

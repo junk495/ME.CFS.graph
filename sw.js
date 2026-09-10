@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var VERSION = 'v2';
+  var VERSION = 'v3';
   var CACHE_NAME = 'mecfs-graph-' + VERSION;
   var ASSETS = [
     './',
@@ -16,10 +16,14 @@
     event.waitUntil(
       caches.open(CACHE_NAME).then(function (cache) {
         return cache.addAll(ASSETS);
-      }).then(function () {
-        return self.skipWaiting();
       })
     );
+  });
+
+  self.addEventListener('message', function (event) {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+      self.skipWaiting();
+    }
   });
 
   self.addEventListener('activate', function (event) {
@@ -29,8 +33,6 @@
           keys.filter(function (key) { return key !== CACHE_NAME; })
             .map(function (key) { return caches.delete(key); })
         );
-      }).then(function () {
-        return self.clients.claim();
       })
     );
   });

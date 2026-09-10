@@ -355,6 +355,26 @@ li {
   padding: 14px 12px 24px;
 }
 
+.update-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 10px 12px 0;
+  padding: 10px 12px;
+  border: 1px solid var(--accent);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
+.update-banner[hidden] {
+  display: none;
+}
+
 @media (min-width: 600px) {
   .chip-group {
     min-width: 0;
