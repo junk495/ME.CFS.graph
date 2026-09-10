@@ -16,10 +16,12 @@ Fertig – deine Daten werden sofort angezeigt. Es wird **nichts hochgeladen**; 
 
 Oben gibt es vier Reiter:
 
-* **Trend**
 * **Heatmap**
 * **Crash-Risiko**
+* **Trend**
 * **Hilfe**
+
+Beim Öffnen startet die App in der **Heatmap**-Ansicht.
 
 ### Trend
 
