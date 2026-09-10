@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.0 – 2026-09-10
+
+### Geändert
+
+* **Navigation neu sortiert:** Die Reiter erscheinen jetzt in der Reihenfolge **Heatmap → Crash-Risiko → Trend → Hilfe**. Der Trend bleibt weiterhin die beim Start sichtbare Ansicht.
+* **Service-Worker-Version** von `v1` auf `v2` angehoben, damit Nutzer:innen den neuen Stand automatisch erhalten.
+
 ## v1.0.0 – 2026-09-10
 
 Erste Version der eigenständigen Visualisierungs-App **ME.CFS.graph**.
