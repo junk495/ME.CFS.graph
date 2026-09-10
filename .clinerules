@@ -1,0 +1,67 @@
+# Projektkontext
+Das Projekt ist eine eigenständige, rein statische Web-Anwendung ("ME.CFS.graph") zur grafischen Auswertung der vom ME/CFS-Symptom-Tracker exportierten Daten (CSV oder JSON).
+Primäres Ziel: Den Verlauf einer ME/CFS-Erkrankung sichtbar machen und eine transparente, regelbasierte Orientierung zum Crash-Risiko (PEM) bieten.
+Hosting-Umgebung: GitHub Pages (rein statisch, HTTPS). Der Daten-Import erfolgt ausschließlich lokal im Browser; es gibt kein Backend.
+
+# Technologie-Stack
+- Struktur & Design: HTML5, CSS3 (keine Build-Tools wie Webpack/Vite).
+- Logik: Modernes Vanilla JavaScript (ES6+), kein Framework, keine jQuery.
+- Diagramme: eigene Zeichnungen mit nativem Canvas (keine externe Chart-Bibliothek).
+- Daten: Import von CSV (Semikolon-getrennt, UTF-8) oder JSON per Datei-Auswahl; Verarbeitung ausschließlich im Browser.
+- Optional PWA: `manifest.json` + `sw.js` (Service Worker) für Caching und Offline-Betrieb.
+- Kein Node.js/PHP/Python-Code, keine Datenübertragung an übergeordnete Instanzen.
+
+# Strikte Regeln für die Code-Generierung (KI-Direktiven)
+
+1. ABSOLUTE DATENLOKALITÄT:
+   - Importdateien (CSV/JSON) werden ausschließlich lokal im Browser gelesen und verarbeitet.
+   - Schreibe NIEMALS Code, der Nutzerdaten an einen externen Server, eine API oder eine Cloud-Datenbank sendet.
+
+2. KEIN BACKEND / KEINE FRAMEWORKS / KEINE EXTERNEN BIBLIOTHEKEN:
+   - Das Projekt ist 100 % statisch.
+   - Keine Frontend-Frameworks (React, Vue, Angular), kein jQuery. Nur Vanilla JS.
+   - Keine CSS-Frameworks (Tailwind/Bootstrap), kein CDN. Nur reines CSS in einer separaten `style.css`.
+   - Keine externe Chart-Bibliothek: Diagramme mit nativem Canvas/SVG selbst zeichnen, um Offline-Fähigkeit ohne Abhängigkeiten zu garantieren.
+
+3. MOBILE-FIRST & BARRIEREFREIHEIT (UX/UI):
+   - Designe für die Smartphone-Nutzung (Hochformat).
+   - Verhindere horizontales Scrollen strikt.
+   - Touch-Flächen (Buttons/Chips) müssen groß sein (mind. 44x44 px).
+   - Nutze augenschonende, reizarme Farben (Dark Mode bevorzugt), keine Animationen, hohe Kontraste.
+   - Metrik-Auswahl über große Tap-Chips/Buttons. Keine hover-abhängigen Bedienelemente.
+
+4. SINGLE PAGE APPLICATION (SPA) STRUKTUR:
+   - Die gesamte App besteht aus einer `index.html`.
+   - Navigation zwischen Ansichten ("Trend", "Heatmap", "Crash-Risiko", "Hilfe") erfolgt ausschließlich über das Ein-/Ausblenden von DOM-Elementen per JavaScript (`display: none` / `block`).
+
+5. DATENVERARBEITUNG & AUSWERTUNG:
+   - Leere CSV-Felder werden als `null` interpretiert (niemals als `0` oder `""`), damit Lücken im Graphen korrekt erscheinen und Mittelwerte nicht verfälscht werden.
+   - Skalen-Richtung beachten: Skalen 0–4 (Symptome/Belastung) = höher ist schlechter; Zustand (0–10), Bell (0–100), Pacing, Arbeitsfähigkeit, Teilhabe = höher ist besser.
+   - Dezimalkomma (`7,5`) korrekt nach `7.5` parsen.
+   - Der Crash-Risiko-Score ist regelbasiert, transparent und nachvollziehbar und wird mit einem deutlichen medizinischen Haftungsausschluss versehen (kein Diagnose-/Medizinprodukt).
+
+# Dokumentation (Markdown-Dateien)
+
+Die Dokumentation besteht aus acht Markdown-Dateien mit klar getrennten Zuständigkeiten. Sie sind Teil des Projekts und müssen bei Code-Änderungen mitgepflegt werden.
+
+## Definition & Zuständigkeiten
+
+- `README.md` — Projektüberblick & Einstieg: Live-App-Link, Installation, Kernfunktionen, Verlinkung aller anderen MDs (Links öffnen in neuem Tab). NICHT hinein: ausführliche Bedienung, Feld-Details, medizinische Grundlagen.
+- `BEDIENUNGSANLEITUNG.md` — Anwender-Dokumentation ohne Technik-Jargon: Import, Ansichten, Risiko-Anzeige. NICHT hinein: Feld-Keys, Code, Versionshistorie.
+- `ERLAEUTERUNGEN.md` — Fachlicher Hintergrund: ME/CFS, PEM, Skalen, erklärtes Regelwerk des Risiko-Scores, Quellen. NICHT hinein: Bedienung, Code, Versionshistorie.
+- `FAQ.md` — Häufige Fragen (Anwender): Datensicherheit, Import, Installation, Risiko-Anzeige. NICHT hinein: Schritt-für-Schritt-Anleitungen (→ Bedienungsanleitung), Code-Details.
+- `DATENMODELL.md` — Technische Referenz: Import-Formate, alle Feld-Keys, Labels, Skalen, Skalen-Richtungen, Gruppen (Domänen), Berechnungsweise des Risiko-Scores. NICHT hinein: Anwender-Erklärungen, Versionshistorie.
+- `CHANGELOG.md` — Versionshistorie (je Version die Änderungen an der App: Funktionen, Ansichten, UI, Verhalten). NICHT hinein: aktuelle Feature-Beschreibung (→ README), Bedienung, Änderungen an Dokumentation/Lizenz.
+- `DEV_GUIDE.md` — Entwickler-Handbuch: Projektstruktur, Datenkonventionen, app.js-Übersicht, Release-Prozess, lokale Entwicklung. NICHT hinein: Anwender-Inhalte.
+- `LICENSE.md` — Lizenz (CC BY-NC-SA 4.0) + medizinischer Haftungsausschluss.
+
+## Pflege-Regeln (KI-Direktiven)
+
+- Die MDs sind verbindliche Projektdokumentation. Bei Code-Änderungen MÜSSEN die betroffenen MDs im selben Schritt aktualisiert werden.
+- Konkrete Zuordnung:
+  - Geändertes Import-Format / geänderte Berechnung / geändertes Risiko-Regelwerk → `DATENMODELL.md` (+ ggf. `ERLAEUTERUNGEN.md`).
+  - Neue Funktion / neue Ansicht / geändertes UI → `BEDIENUNGSANLEITUNG.md` (+ ggf. `README.md`, `FAQ.md`).
+  - Neue Version (`VERSION` in `sw.js` erhöhen) → `CHANGELOG.md`.
+  - Änderung an Lizenz/Rechtlichem → `LICENSE.md`.
+- Keine Duplikate: Jeder Inhalt gehört in genau EINE MD. Wird derselbe Inhalt mehrfach benötigt, wird verlinkt statt kopiert.
+- Die MDs müssen fachlich korrekt und mit dem Code konsistent sein — veraltete Aussagen sind sofort zu korrigieren.

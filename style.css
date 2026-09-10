@@ -1,0 +1,362 @@
+:root {
+  --bg: #16181d;
+  --bg-elevated: #1e2128;
+  --bg-panel: #1a1d23;
+  --border: #2c3039;
+  --text: #e8eaf0;
+  --text-dim: #a7adba;
+  --accent: #7fb3d5;
+  --accent-soft: rgba(127, 179, 213, 0.14);
+  --good: #6fbf8b;
+  --warn: #d9b65c;
+  --bad: #d97c7c;
+  --chip-bg: #242830;
+  --chip-active: #32404f;
+
+  --radius: 10px;
+  --tap-min: 44px;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+.app-header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  letter-spacing: 0.2px;
+}
+
+.subtitle {
+  margin: 2px 0 12px;
+  color: var(--text-dim);
+  font-size: 0.92rem;
+}
+
+.import-area {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.button {
+  min-height: var(--tap-min);
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--chip-bg);
+  color: var(--text);
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button:hover,
+.button:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.button-primary {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.import-status {
+  margin-top: 10px;
+  color: var(--text-dim);
+  font-size: 0.88rem;
+}
+
+.nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 8px 12px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-button {
+  min-height: var(--tap-min);
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  color: var(--text);
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.nav-button.is-active {
+  background: var(--chip-active);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+main {
+  padding: 16px 12px 48px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.view {
+  display: block;
+}
+
+.view[hidden] {
+  display: none !important;
+}
+
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.panel h2 {
+  margin: 0 0 4px;
+  font-size: 1.2rem;
+}
+
+.panel h3 {
+  margin: 20px 0 6px;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.hint {
+  margin: 0 0 14px;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.chip-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.chip-group {
+  flex: 1 1 auto;
+  min-width: 100%;
+}
+
+.chip-group h3 {
+  margin: 4px 0 6px;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-dim);
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  min-height: var(--tap-min);
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  color: var(--text);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.chip.is-active {
+  background: var(--chip-active);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--tap-min);
+  color: var(--text-dim);
+  font-size: 0.92rem;
+  margin-bottom: 14px;
+  cursor: pointer;
+}
+
+.toggle-row input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--accent);
+}
+
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.chart-wrap canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: pan-y;
+}
+
+.chart-readout {
+  min-height: 1.4em;
+  margin-top: 8px;
+  color: var(--text-dim);
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+.empty-state {
+  padding: 28px 12px;
+  text-align: center;
+  color: var(--text-dim);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+
+.risk-gauge {
+  text-align: center;
+  padding: 18px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  margin-bottom: 12px;
+}
+
+.risk-gauge .risk-level {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 6px 0 2px;
+}
+
+.risk-gauge .risk-label {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.risk-gauge.risk-stable .risk-level { color: var(--good); }
+.risk-gauge.risk-watch .risk-level { color: var(--warn); }
+.risk-gauge.risk-high .risk-level { color: var(--bad); }
+
+.risk-summary {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+}
+
+.risk-factors {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  color: var(--text-dim);
+  font-size: 0.92rem;
+}
+
+.risk-factors li {
+  margin-bottom: 6px;
+}
+
+.risk-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-top: 6px;
+}
+
+.risk-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.88rem;
+  min-width: 420px;
+}
+
+.risk-table th,
+.risk-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.risk-table th {
+  color: var(--text-dim);
+  font-weight: 600;
+  background: var(--bg-elevated);
+}
+
+.risk-table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.delta-up { color: var(--bad); }
+.delta-down { color: var(--good); }
+.delta-flat { color: var(--text-dim); }
+
+.disclaimer {
+  margin-top: 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--warn);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  color: var(--text-dim);
+  font-size: 0.88rem;
+}
+
+.doc-links a,
+a {
+  color: var(--accent);
+}
+
+ul {
+  padding-left: 20px;
+}
+
+li {
+  margin-bottom: 4px;
+}
+
+.app-footer {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  padding: 14px 12px 24px;
+}
+
+@media (min-width: 600px) {
+  .chip-group {
+    min-width: 0;
+  }
+}

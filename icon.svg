@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ME.CFS.graph Icon">
+  <rect width="512" height="512" rx="96" fill="#16181d"/>
+  <g stroke="#7fb3d5" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <polyline points="64,360 140,280 210,320 300,180 448,220"/>
+  </g>
+  <circle cx="448" cy="220" r="26" fill="#7fb3d5"/>
+  <g stroke="#2c3039" stroke-width="14">
+    <line x1="64" y1="420" x2="448" y2="420"/>
+  </g>
+</svg>

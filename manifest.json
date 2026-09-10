@@ -1,0 +1,19 @@
+{
+  "name": "ME.CFS.graph",
+  "short_name": "ME.CFS.graph",
+  "description": "Lokale, grafische Auswertung der ME/CFS-Symptom-Tracker-Daten (CSV/JSON) mit Verlaufs- und Crash-Risiko-Orientierung.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#16181d",
+  "theme_color": "#16181d",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
