@@ -1,11 +1,5 @@
 # Changelog
 
-## v2.1.0 – 2026-09-10
-
-### Korrigiert
-
-* **Skalen-Richtung korrigiert:** Pacing, Arbeitsfähigkeit und Teilhabe wurden fälschlich als „höher = besser“ interpretiert. Gemäß der Tracker-Dokumentation gelten auch diese 0–4-Skalen als „höher = schlechter“ (mehr Einschränkung). Nur Zustand (0–10) und Bell (0–100) bedeuten „höher = besser“. Betroffen waren Datenmodell, Erläuterungen, Bedienungsanleitung, Hilfe-Ansicht, `.clinerules` und die Feld-Definitionen in `app.js`.
-
 ## v2.0.0 – 2026-09-10
 
 ### Geändert

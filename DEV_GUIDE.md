@@ -10,7 +10,7 @@ Kurze technische Referenz für Wartung und Weiterentwicklung von **ME.CFS.graph*
 | `style.css` | Reines CSS (Dark Theme, Mobile-First, keine Frameworks) |
 | `app.js` | Komplette Logik (Vanilla JS, IIFE) |
 | `manifest.json` | PWA-Manifest |
-| `sw.js` | Service Worker (Cache-First, Versionierung) |
+| `sw.js` | Service Worker (Cache-First, Versionierung, Update-Hinweis) |
 | `icon.svg` | App-Icon |
 | `*.md` | Dokumentation |
 
@@ -52,10 +52,10 @@ Kurze technische Referenz für Wartung und Weiterentwicklung von **ME.CFS.graph*
 ## Release-Prozess
 
 1. Code ändern.
-2. `VERSION` in `sw.js` erhöhen (z. B. `'v1'` → `'v2'`).
+2. `VERSION` in `sw.js` erhöhen (z. B. `'v2'` → `'v3'`).
 3. Eintrag in `CHANGELOG.md` ergänzen.
 4. Pushen → GitHub Pages deployt automatisch.
-5. Nutzer erhalten beim nächsten Öffnen den Hinweis „Neue Version verfügbar".
+5. Nutzer erhalten beim nächsten Öffnen den Hinweis „Neue Version verfügbar“. Der neue Service Worker wartet zunächst und übernimmt erst nach Tippen auf „Jetzt aktualisieren“ (dann wird neu geladen). So gehen keine bereits geladenen Daten verloren.
 
 ## Lokale Entwicklung
 

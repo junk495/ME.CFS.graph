@@ -4,22 +4,24 @@ Diese Anleitung erklärt Schritt für Schritt, wie du die grafische Auswertung n
 
 ## 1. Daten laden
 
-1. Öffne die App in deinem Browser.
-2. Tippe auf **„CSV / JSON laden"**.
-3. Wähle die vom ME/CFS-Symptom-Tracker exportierte **CSV-Datei** (oder eine JSON-Datei) aus.
+Es gibt drei Wege, deine Daten in die App zu bekommen:
+
+* **Direkt aus dem Tracker:** Tippe auf **„Aus Tracker laden"**. Die App übernimmt die Daten direkt aus dem ME/CFS-Symptom-Tracker — ein Tipp genügt, wenn du beide Apps im **selben Browser** nutzt.
+* **Datei laden:** Tippe auf **„CSV / JSON laden"** und wähle die vom ME/CFS-Symptom-Tracker exportierte **CSV-Datei** (oder eine JSON-Datei) aus.
+* **Beispieldaten:** Mit **„Beispieldaten"** kannst du dir die Ansichten mit erfundenen Daten ansehen.
 
 Fertig – deine Daten werden sofort angezeigt. Es wird **nichts hochgeladen**; alles passiert nur auf deinem Gerät.
-
-> **Test ohne eigene Daten:** Mit **„Beispieldaten"** kannst du dir die Ansichten mit erfundenen Daten ansehen.
 
 ## 2. Die Ansichten
 
 Oben gibt es vier Reiter:
 
-* **Trend**
 * **Heatmap**
 * **Crash-Risiko**
+* **Trend**
 * **Hilfe**
+
+Beim Öffnen startet die App in der **Heatmap**-Ansicht.
 
 ### Trend
 
