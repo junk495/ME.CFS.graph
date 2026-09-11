@@ -36,7 +36,7 @@ Hosting-Umgebung: GitHub Pages (rein statisch, HTTPS). Der Daten-Import erfolgt 
 
 5. DATENVERARBEITUNG & AUSWERTUNG:
    - Leere CSV-Felder werden als `null` interpretiert (niemals als `0` oder `""`), damit Lücken im Graphen korrekt erscheinen und Mittelwerte nicht verfälscht werden.
-   - Skalen-Richtung beachten: Skalen 0–4 (Symptome/Belastung) = höher ist schlechter; Zustand (0–10), Bell (0–100), Pacing, Arbeitsfähigkeit, Teilhabe = höher ist besser.
+   - Skalen-Richtung beachten: Alle Skalen 0–4 (Symptome, Belastung, Pacing, Arbeitsfähigkeit, Teilhabe) = höher ist schlechter; nur Zustand (0–10) und Bell (0–100) = höher ist besser.
    - Dezimalkomma (`7,5`) korrekt nach `7.5` parsen.
    - Der Crash-Risiko-Score ist regelbasiert, transparent und nachvollziehbar und wird mit einem deutlichen medizinischen Haftungsausschluss versehen (kein Diagnose-/Medizinprodukt).
 

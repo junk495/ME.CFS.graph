@@ -42,9 +42,9 @@ Dezimalkomma (`7,5`) wird korrekt nach `7.5` geparst.
 | `belastung_koerperlich_0_4` | Koerperliche Belastung (0-4) | Belastung körperlich | 0_4 | worse |
 | `belastung_kognitiv_0_4` | Kognitive Belastung (0-4) | Belastung kognitiv | 0_4 | worse |
 | `belastung_reiz_0_4` | Reizbelastung (0-4) | Reizbelastung | 0_4 | worse |
-| `pacing_0_4` | Pacing (0-4) | Pacing | 0_4 | better |
-| `arbeitsfaehigkeit_0_4` | Arbeitsfaehigkeit (0-4) | Arbeitsfähigkeit | 0_4 | better |
-| `teilhabe_0_4` | Teilhabe (0-4) | Teilhabe | 0_4 | better |
+| `pacing_0_4` | Pacing (0-4) | Pacing | 0_4 | worse |
+| `arbeitsfaehigkeit_0_4` | Arbeitsfaehigkeit (0-4) | Arbeitsfähigkeit | 0_4 | worse |
+| `teilhabe_0_4` | Teilhabe (0-4) | Teilhabe | 0_4 | worse |
 | `schlafdauer_h` | Schlafdauer (h) | Schlafdauer | hours | neutral |
 | `schritte` | Schritte | Schritte | steps | neutral |
 | `kontext` | Kontext | Kontext | text | neutral |

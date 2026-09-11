@@ -51,9 +51,8 @@ Darunter steht, **warum** die App zu dieser Einschätzung kommt (z. B. gestiegen
 
 ## 3. Was bedeuten die Skalen?
 
-* **Symptome und Belastung (0–4):** höher = schlechter/stärker.
+* **Alle Skalen 0–4** (Symptome, Belastung, Pacing, Arbeitsfähigkeit, Teilhabe): höher = schlechter/stärker.
 * **Zustand (0–10) und Bell (0–100):** höher = besser.
-* **Pacing, Arbeitsfähigkeit, Teilhabe (0–4):** höher = besser.
 
 ## 4. Wichtiger Hinweis
 

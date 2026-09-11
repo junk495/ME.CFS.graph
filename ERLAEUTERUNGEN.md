@@ -30,9 +30,8 @@ Die Daten gliedern sich in mehrere Bereiche, die in der Heatmap sichtbar werden:
 
 ## 4. Skalen-Richtung
 
-* **Symptome/Belastung (0–4):** höher = schlechter/stärker.
+* **Alle Skalen 0–4** (Symptome, Belastung, Pacing, Arbeitsfähigkeit, Teilhabe): höher = schlechter/stärker.
 * **Zustand (0–10) und Bell (0–100):** höher = besser.
-* **Pacing, Arbeitsfähigkeit, Teilhabe (0–4):** höher = besser.
 
 Diese Richtung wird bei der Trend-Anzeige und der Risiko-Berechnung berücksichtigt, damit ein sinkender Zustand korrekt als Verschlechterung erkannt wird.
 
