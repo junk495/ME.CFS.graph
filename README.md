@@ -13,7 +13,7 @@ Diese App erfasst selbst keine Daten. Die anzuzeigenden Werte stammen aus dem Pr
 * **Trend:** Beliebige Messwerte als Zeitreihe über die Tage – inklusive persönlicher Baseline (gleitender Median).
 * **Heatmap:** Alle Tage × Symptombereiche auf einen Blick (Farbcodierung 0–4).
 * **Crash-Risiko:** Nachvollziehbare, regelbasierte Ampel (stabil / beobachten / hohes Crash-Risiko) mit Begründung.
-* **Direkt aus dem Tracker:** Über „Aus Tracker laden" werden die Daten des ME/CFS-Symptom-Trackers per Tipp übernommen (gleicher Browser).
+* **Direkt aus dem Tracker:** Über „Tracker" werden die Daten des ME/CFS-Symptom-Trackers per Tipp übernommen (gleicher Browser).
 * **100 % lokal:** Die Importdatei wird ausschließlich im Browser gelesen und verarbeitet. Es gibt kein Backend und keine Datenübertragung.
 * **Keine Abhängigkeiten:** Diagramme werden mit nativem Canvas gezeichnet – keine externen Bibliotheken.
 * **Offline-fähig:** Nach dem ersten Aufruf funktioniert die App ohne Internetverbindung (PWA).
@@ -23,7 +23,7 @@ Diese App erfasst selbst keine Daten. Die anzuzeigenden Werte stammen aus dem Pr
 Da es sich um eine statische Web-Anwendung handelt, ist keine Installation über einen App-Store nötig:
 
 1. Den Link <a href="https://junk495.github.io/ME.CFS.graph/" target="_blank" rel="noopener noreferrer">https://junk495.github.io/ME.CFS.graph/</a> im Browser öffnen.
-2. Die exportierte CSV-Datei (oder JSON) über „CSV / JSON laden" auswählen.
+2. Die exportierte CSV-Datei (oder JSON) über „CSV/JSON" auswählen.
 3. Optional im Browser-Menü **„Zum Startbildschirm hinzufügen"** wählen.
 
 ## Dokumentation

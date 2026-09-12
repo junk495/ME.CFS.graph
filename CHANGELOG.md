@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.5.0 – 2026-09-12
+
+### Geändert
+
+* **Navigation unten:** Die Ansichten-Auswahl sitzt jetzt als feste Tab-Leiste am unteren Bildschirmrand (wie im Tracker) statt als Buttons oben.
+* **Header aufgeräumt:** Die drei Import-Buttons stehen jetzt in einer Zeile; der „CSV/JSON"-Button hat keinen dauerhaft leuchtenden Rand mehr.
+* **Footer entfernt** (Hinweis „Lokale Auswertung · keine Datenübertragung" entfällt).
+
 ## v2.4.1 – 2026-09-12
 
 ### Behoben

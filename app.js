@@ -597,7 +597,7 @@
     document.querySelectorAll('.view').forEach(function (sec) {
       sec.hidden = (sec.id !== 'view-' + name);
     });
-    document.querySelectorAll('.nav-button').forEach(function (btn) {
+    document.querySelectorAll('.tab').forEach(function (btn) {
       btn.classList.toggle('is-active', btn.dataset.view === name);
     });
     if (name === 'trend') renderTrend();
@@ -1166,7 +1166,7 @@
   // ---------------------------------------------------------------------------
 
   function init() {
-    document.querySelectorAll('.nav-button').forEach(function (btn) {
+    document.querySelectorAll('.tab').forEach(function (btn) {
       btn.addEventListener('click', function () { switchView(btn.dataset.view); });
     });
 

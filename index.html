@@ -15,10 +15,10 @@
     <p class="subtitle">Verlauf & Crash-Risiko-Orientierung</p>
 
     <div class="import-area" id="import-area">
-      <label class="button button-primary" for="file-input">CSV / JSON laden</label>
+      <label class="button button-primary" for="file-input" title="CSV- oder JSON-Datei laden">CSV/JSON</label>
       <input type="file" id="file-input" accept=".csv,.json,text/csv,application/json" hidden>
-      <button class="button" id="demo-button" type="button">Beispieldaten</button>
-      <button class="button" id="tracker-button" type="button">Aus Tracker laden</button>
+      <button class="button" id="demo-button" type="button" title="Beispieldaten anzeigen">Beispiel</button>
+      <button class="button" id="tracker-button" type="button" title="Daten aus dem Tracker laden (gleicher Browser)">Tracker</button>
     </div>
 
     <div class="import-status" id="import-status" role="status" aria-live="polite">
@@ -30,13 +30,6 @@
     <span>Neue Version verfügbar</span>
     <button class="button" id="update-reload" type="button">Jetzt aktualisieren</button>
   </div>
-
-  <nav class="nav" aria-label="Ansichten">
-    <button class="nav-button is-active" data-view="heatmap" type="button">Heatmap</button>
-    <button class="nav-button" data-view="risk" type="button">Crash-Risiko</button>
-    <button class="nav-button" data-view="trend" type="button">Trend</button>
-    <button class="nav-button" data-view="help" type="button">Hilfe</button>
-  </nav>
 
   <main>
     <!-- TREND -->
@@ -136,9 +129,12 @@
     </section>
   </main>
 
-  <footer class="app-footer">
-    <span>Lokale Auswertung · keine Datenübertragung</span>
-  </footer>
+  <nav class="tab-bar" aria-label="Ansichten">
+    <button class="tab is-active" data-view="heatmap" type="button">Heatmap</button>
+    <button class="tab" data-view="risk" type="button">Crash-Risiko</button>
+    <button class="tab" data-view="trend" type="button">Trend</button>
+    <button class="tab" data-view="help" type="button">Hilfe</button>
+  </nav>
 
   <script src="app.js"></script>
 </body>

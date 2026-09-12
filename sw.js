@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var VERSION = 'v2.4.1';
+  var VERSION = 'v2.5.0';
   var CACHE_NAME = 'mecfs-graph-' + VERSION;
   var ASSETS = [
     './',
