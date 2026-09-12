@@ -43,7 +43,7 @@ Weil PEM oft **verzögert** (12–72 h) auftritt. Hohe Belastung bei bereits ste
 ## Installation & Nutzung
 
 **Muss ich die App installieren?**
-Nein. Sie läuft direkt im Browser. Optional kannst du sie über „Zum Startbildschirm hinzufügen" wie eine App installieren (PWA).
+Nein. Sie läuft direkt im Browser. Optional kannst du sie als App installieren (PWA): unter Android/Chrome über **„App installieren"**, unter iOS/Safari über **„Zum Home-Bildschirm"**.
 
 **Funktioniert die App auf dem Smartphone?**
 Ja. Die Ansichten sind für die Smartphone-Nutzung im Hochformat optimiert.

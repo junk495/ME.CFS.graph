@@ -24,7 +24,10 @@ Da es sich um eine statische Web-Anwendung handelt, ist keine Installation über
 
 1. Den Link <a href="https://junk495.github.io/ME.CFS.graph/" target="_blank" rel="noopener noreferrer">https://junk495.github.io/ME.CFS.graph/</a> im Browser öffnen.
 2. Die exportierte CSV-Datei (oder JSON) über „CSV/JSON" auswählen.
-3. Optional im Browser-Menü **„Zum Startbildschirm hinzufügen"** wählen.
+3. Optional als App installieren:
+   - **Android (Chrome):** Im Menü **„App installieren"** wählen.
+   - **iOS (Safari):** Im Teilen-Menü **„Zum Home-Bildschirm"** wählen.
+   - **Desktop (Chrome/Edge):** Auf das Install-Symbol in der Adressleiste klicken.
 
 ## Dokumentation
 
