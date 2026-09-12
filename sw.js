@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var VERSION = 'v2.5.0';
+  var VERSION = 'v2.5.1';
   var CACHE_NAME = 'mecfs-graph-' + VERSION;
   var ASSETS = [
     './',
@@ -9,7 +9,9 @@
     './style.css',
     './app.js',
     './manifest.json',
-    './icon.svg'
+    './icon.svg',
+    './icons/icon-192.png',
+    './icons/icon-512.png'
   ];
 
   self.addEventListener('install', function (event) {
@@ -18,12 +20,7 @@
         return cache.addAll(ASSETS);
       })
     );
-  });
-
-  self.addEventListener('message', function (event) {
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-      self.skipWaiting();
-    }
+    self.skipWaiting();
   });
 
   self.addEventListener('activate', function (event) {
@@ -34,6 +31,16 @@
             .map(function (key) { return caches.delete(key); })
         );
       })
+        .then(function () {
+          return self.clients.claim();
+        })
+        .then(function () {
+          return self.clients.matchAll({ type: 'window' }).then(function (clients) {
+            clients.forEach(function (client) {
+              client.postMessage({ type: 'UPDATE_READY' });
+            });
+          });
+        })
     );
   });
 

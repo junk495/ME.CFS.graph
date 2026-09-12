@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.5.1 – 2026-09-12
+
+### Behoben
+
+* **Installierbar:** PNG-Icons (192/512) ergänzt — Chrome bietet die App jetzt zur Installation an (vorher nur SVG-Icon).
+* **Updates zuverlässiger:** Update-Mechanismus auf das Tracker-Muster umgestellt (`skipWaiting` + `UPDATE_READY`-Hinweis).
+
 ## v2.5.0 – 2026-09-12
 
 ### Geändert

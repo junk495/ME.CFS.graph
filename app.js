@@ -1212,35 +1212,22 @@
     if ('serviceWorker' in navigator) {
       var updateBanner = document.getElementById('update-banner');
       var updateButton = document.getElementById('update-reload');
-      var waitingWorker = null;
-      var reloading = false;
+      // Nur bei echten Updates anzeigen (nicht beim allerersten Install):
+      var hadController = !!navigator.serviceWorker.controller;
 
-      navigator.serviceWorker.register('./sw.js').then(function (registration) {
-        registration.addEventListener('updatefound', function () {
-          var newWorker = registration.installing;
-          if (!newWorker) return;
-          newWorker.addEventListener('statechange', function () {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              waitingWorker = newWorker;
-              if (updateBanner) updateBanner.hidden = false;
-            }
-          });
-        });
-      }).catch(function () {
-        // Offline-Cache ist optional; Fehler sind unkritisch.
+      navigator.serviceWorker.addEventListener('message', function (event) {
+        if (event.data && event.data.type === 'UPDATE_READY' && hadController) {
+          if (updateBanner) updateBanner.hidden = false;
+        }
       });
 
-      navigator.serviceWorker.addEventListener('controllerchange', function () {
-        if (reloading) return;
-        reloading = true;
-        window.location.reload();
+      navigator.serviceWorker.register('./sw.js').catch(function () {
+        // Offline-Cache ist optional; Fehler sind unkritisch.
       });
 
       if (updateButton) {
         updateButton.addEventListener('click', function () {
-          if (waitingWorker) {
-            waitingWorker.postMessage({ type: 'SKIP_WAITING' });
-          }
+          window.location.reload();
         });
       }
     }
