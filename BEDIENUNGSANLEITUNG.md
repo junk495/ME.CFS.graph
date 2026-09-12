@@ -6,7 +6,7 @@ Diese Anleitung erklärt Schritt für Schritt, wie du die grafische Auswertung n
 
 Es gibt drei Wege, deine Daten in die App zu bekommen:
 
-* **Direkt aus dem Tracker:** Tippe auf **„Tracker"**. Die App übernimmt die Daten direkt aus dem ME/CFS-Symptom-Tracker — ein Tipp genügt, wenn du beide Apps im **selben Browser** nutzt.
+* **Direkt aus dem Tracker:** Das passiert automatisch — beim Öffnen übernimmt die App vorhandene Tracker-Daten selbst, wenn du beide Apps im **selben Browser** nutzt. Du kannst auch jederzeit auf **„Tracker"** tippen.
 * **Datei laden:** Tippe auf **„CSV/JSON"** und wähle die vom ME/CFS-Symptom-Tracker exportierte **CSV-Datei** (oder eine JSON-Datei) aus.
 * **Beispieldaten:** Mit **„Beispiel"** kannst du dir die Ansichten mit erfundenen Daten ansehen.
 

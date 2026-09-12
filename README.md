@@ -13,7 +13,7 @@ Diese App erfasst selbst keine Daten. Die anzuzeigenden Werte stammen aus dem Pr
 * **Trend:** Beliebige Messwerte als Zeitreihe über die Tage – inklusive persönlicher Baseline (gleitender Median).
 * **Heatmap:** Alle Tage × Symptombereiche auf einen Blick (Farbcodierung 0–4).
 * **Crash-Risiko:** Nachvollziehbare, regelbasierte Ampel (stabil / beobachten / hohes Crash-Risiko) mit Begründung.
-* **Direkt aus dem Tracker:** Über „Tracker" werden die Daten des ME/CFS-Symptom-Trackers per Tipp übernommen (gleicher Browser).
+* **Direkt aus dem Tracker:** Vorhandene Tracker-Daten werden beim Öffnen automatisch übernommen (gleicher Browser); zusätzlich gibt es den „Tracker"-Button.
 * **100 % lokal:** Die Importdatei wird ausschließlich im Browser gelesen und verarbeitet. Es gibt kein Backend und keine Datenübertragung.
 * **Keine Abhängigkeiten:** Diagramme werden mit nativem Canvas gezeichnet – keine externen Bibliotheken.
 * **Offline-fähig:** Nach dem ersten Aufruf funktioniert die App ohne Internetverbindung (PWA).

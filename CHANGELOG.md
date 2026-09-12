@@ -5,7 +5,9 @@
 ### Geändert
 
 * **Navigation unten:** Die Ansichten-Auswahl sitzt jetzt als feste Tab-Leiste am unteren Bildschirmrand (wie im Tracker) statt als Buttons oben.
-* **Header aufgeräumt:** Die drei Import-Buttons stehen jetzt in einer Zeile; der „CSV/JSON"-Button hat keinen dauerhaft leuchtenden Rand mehr.
+* **Header aufgeräumt:** Die drei Import-Buttons stehen jetzt in einer Zeile; der primäre Button hat keinen dauerhaft leuchtenden Rand mehr.
+* **Reihenfolge der Import-Buttons:** „Tracker" ist jetzt die Standard-Auswahl (links, primär), danach „CSV/JSON" und „Beispiel".
+* **Auto-Load:** Beim Öffnen werden vorhandene Tracker-Daten automatisch geladen (gleicher Browser).
 * **Footer entfernt** (Hinweis „Lokale Auswertung · keine Datenübertragung" entfällt).
 
 ## v2.4.1 – 2026-09-12
