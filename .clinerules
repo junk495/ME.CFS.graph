@@ -40,6 +40,11 @@ Hosting-Umgebung: GitHub Pages (rein statisch, HTTPS). Der Daten-Import erfolgt 
    - Dezimalkomma (`7,5`) korrekt nach `7.5` parsen.
    - Der Crash-Risiko-Score ist regelbasiert, transparent und nachvollziehbar und wird mit einem deutlichen medizinischen Haftungsausschluss versehen (kein Diagnose-/Medizinprodukt).
 
+6. DATENMODELL-KOMPATIBILITÄT (ME/CFS-Symptom-Tracker):
+   - Die Feld-Keys und CSV-Header (`FIELD_DEFS` in `app.js`) bilden den Daten-Vertrag mit dem ME/CFS-Symptom-Tracker.
+   - Feld-Keys, CSV-Header und Skalen-Richtungen dürfen NUR geändert werden, wenn der Tracker (gleicher Stand) im selben Schritt mit angepasst wird — sonst fehlen Werte in der Auswertung.
+   - Bei jeder Änderung am Datenmodell MÜSSEN die `DATENMODELL.md`-Dateien beider Projekte gemeinsam aktualisiert werden.
+
 # Versionierung (Semantic Versioning)
 
 - Die Versionsnummer wird an **zwei** Stellen geführt und MUSS immer übereinstimmen:

@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.4.1 – 2026-09-12
+
+### Behoben
+
+* **Datum-Prüfung verschärft:** Importierte Datumswerte werden nur noch im Format `YYYY-MM-DD` akzeptiert. Der frühere Fallback (`new Date(str)`) konnte bei nicht eindeutigen Datumsformaten (z. B. `09/11/2026`) zu stillen Fehlinterpretationen oder Zeitzonen-Verschiebungen führen — solche Einträge werden jetzt sauber verworfen.
+
 ## v2.4.0 – 2026-09-10
 
 ### Behoben

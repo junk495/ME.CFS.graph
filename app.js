@@ -214,9 +214,8 @@
     if (!s) return null;
     var str = String(s).trim();
     var m = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime();
-    var d = new Date(str);
-    return isNaN(d.getTime()) ? null : d.getTime();
+    if (!m) return null;
+    return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime();
   }
 
   function fmtShort(ts) {
