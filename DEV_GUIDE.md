@@ -11,7 +11,7 @@ Kurze technische Referenz für Wartung und Weiterentwicklung von **ME.CFS.graph*
 | `app.js` | Komplette Logik (Vanilla JS, IIFE) |
 | `manifest.json` | PWA-Manifest |
 | `sw.js` | Service Worker (Cache-First, Versionierung, Update-Hinweis) |
-| `icon.svg` | App-Icon |
+| `icon.svg`, `icons/` | App-Icon (SVG-Quelle + PNG 192/512, maskierbar) |
 | `*.md` | Dokumentation |
 
 ## Datenkonventionen
@@ -52,10 +52,10 @@ Kurze technische Referenz für Wartung und Weiterentwicklung von **ME.CFS.graph*
 ## Release-Prozess
 
 1. Code ändern.
-2. `VERSION` in `sw.js` erhöhen (z. B. `'v2'` → `'v3'`).
-3. Eintrag in `CHANGELOG.md` ergänzen.
+2. `VERSION` in `sw.js` erhöhen — Semantic Versioning (`MAJOR.MINOR.PATCH`), z. B. `'v2.5.1'` → `'v2.6.0'` (neue Funktion/Ansicht) oder `'v2.5.2'` (Bugfix).
+3. Eintrag in `CHANGELOG.md` mit derselben Versionsnummer ergänzen.
 4. Pushen → GitHub Pages deployt automatisch.
-5. Nutzer erhalten beim nächsten Öffnen den Hinweis „Neue Version verfügbar“. Der neue Service Worker wartet zunächst und übernimmt erst nach Tippen auf „Jetzt aktualisieren“ (dann wird neu geladen). So gehen keine bereits geladenen Daten verloren.
+5. Nutzer erhalten beim nächsten Öffnen den Hinweis „Neue Version verfügbar“ mit „Jetzt aktualisieren“. Der neue Service Worker wird über `skipWaiting` sofort aktiv und übernimmt (`clients.claim`); nach dem Neuladen ist der neue Stand aktiv.
 
 ## Lokale Entwicklung
 

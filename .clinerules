@@ -8,7 +8,7 @@ Hosting-Umgebung: GitHub Pages (rein statisch, HTTPS). Der Daten-Import erfolgt 
 - Logik: Modernes Vanilla JavaScript (ES6+), kein Framework, keine jQuery.
 - Diagramme: eigene Zeichnungen mit nativem Canvas (keine externe Chart-Bibliothek).
 - Daten: Import von CSV (Semikolon-getrennt, UTF-8) oder JSON per Datei-Auswahl; Verarbeitung ausschließlich im Browser.
-- Optional PWA: `manifest.json` + `sw.js` (Service Worker) für Caching und Offline-Betrieb.
+- PWA: `manifest.json` + `sw.js` (Service Worker) für Caching und Offline-Betrieb.
 - Kein Node.js/PHP/Python-Code, keine Datenübertragung an übergeordnete Instanzen.
 
 # Strikte Regeln für die Code-Generierung (KI-Direktiven)
