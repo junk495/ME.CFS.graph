@@ -949,6 +949,12 @@
     return { recentMean: rm, baseMedian: bm, delta: delta, recentN: recent.length, baseN: base.length };
   }
 
+  // Formatiert ein Delta: positiv = upVerb, negativ = downVerb, ~0 = unverändert
+  function deltaText(v, upVerb, downVerb) {
+    if (v === null || Math.abs(v) < 0.05) return 'unverändert';
+    return v > 0 ? ('um ' + fmtNumber(v) + ' ' + upVerb) : ('um ' + fmtNumber(-v) + ' ' + downVerb);
+  }
+
   function computeRisk() {
     if (records.length < 3) return null;
 
@@ -967,7 +973,7 @@
     else if (avgDelta >= 0.5) p1 = 1;
     points += p1;
     factors.push({
-      text: 'Die Symptome sind im Schnitt um ' + fmtNumber(avgDelta) + ' gestiegen (0–4-Skala).',
+      text: 'Die Symptome sind im Schnitt ' + deltaText(avgDelta, 'gestiegen', 'gesunken') + ' (0–4-Skala).',
       value: 'Symptom-Anstieg',
       points: p1
     });
@@ -982,7 +988,7 @@
     else if (zWorse >= 1 || bWorse >= 10) p2 = 1;
     points += p2;
     factors.push({
-      text: 'Zustand um ' + fmtNumber(zWorse) + ' (von 10), Bell um ' + fmtNumber(bWorse) + ' (von 100) gefallen.',
+      text: 'Zustand ' + deltaText(zWorse, 'gefallen', 'gestiegen') + ' (von 10), Bell ' + deltaText(bWorse, 'gefallen', 'gestiegen') + ' (von 100).',
       value: 'Zustand/Bell-Abfall',
       points: p2
     });
@@ -1015,7 +1021,7 @@
     else if (pemHeute >= 1) p4 = 1;
     points += p4;
     factors.push({
-      text: '„PEM heute" ' + fmtNumber(pemHeute) + ' (von 4), PEM-Gesamtschwere ' + (activePem ? 'vorhanden' : 'nicht erfasst') + '.',
+      text: 'PEM heute ' + fmtNumber(pemHeute) + ' (von 4), PEM-Gesamtschwere ' + fmtNumber(pemStats.recentMean !== null ? pemStats.recentMean : 0) + ' (von 4).',
       value: 'Aktive PEM',
       points: p4
     });
@@ -1096,18 +1102,26 @@
     var rows = [];
     ['zustand_0_10', 'bell_0_100', 'fatigue_0_4', 'pem_heute_0_4', 'belastung_koerperlich_0_4', 'belastung_kognitiv_0_4', 'belastung_reiz_0_4', 'schlafqualitaet_0_4', 'liegezeit_h', 'schritte'].forEach(function (key) {
       var s = metricStats(key);
-      rows.push({ label: metricLabel(key), recent: s.recentMean, base: s.baseMedian, delta: s.delta, better: FIELDS_BY_KEY[key].dir === 'better' });
+      rows.push({ label: metricLabel(key), recent: s.recentMean, base: s.baseMedian, dir: FIELDS_BY_KEY[key].dir });
     });
 
     var html = '<table class="risk-table"><thead><tr><th>Messwert</th><th class="num">Baseline</th><th class="num">Ø 3 Tage</th><th class="num">Veränderung</th></tr></thead><tbody>';
     rows.forEach(function (r) {
       var deltaTxt = '–';
       var cls = 'delta-flat';
-      if (r.delta !== null) {
-        var sign = r.delta > 0.05 ? '↑' : (r.delta < -0.05 ? '↓' : '→');
-        deltaTxt = sign + ' ' + fmtNumber(Math.abs(r.delta));
-        // Für "höher ist besser"-Metriken ist Verschlechterung negativ dargestellt
-        cls = Math.abs(r.delta) < 0.05 ? 'delta-flat' : (r.delta > 0 ? 'delta-up' : 'delta-down');
+      if (r.recent !== null && r.base !== null) {
+        var numDelta = r.recent - r.base;
+        var sign = numDelta > 0.05 ? '↑' : (numDelta < -0.05 ? '↓' : '→');
+        deltaTxt = sign + ' ' + fmtNumber(Math.abs(numDelta));
+        if (Math.abs(numDelta) < 0.05) {
+          cls = 'delta-flat';
+        } else if (r.dir === 'better') {
+          cls = numDelta < 0 ? 'delta-up' : 'delta-down';
+        } else if (r.dir === 'worse') {
+          cls = numDelta > 0 ? 'delta-up' : 'delta-down';
+        } else {
+          cls = 'delta-flat';
+        }
       }
       html += '<tr><td>' + r.label + '</td>' +
         '<td class="num">' + (r.base !== null ? fmtNumber(r.base) : '–') + '</td>' +

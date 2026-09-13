@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.5.7 – 2026-09-12
+
+### Geändert
+
+* **Crash-Risiko logischer:** Faktor-Texte formulieren Richtungen jetzt korrekt (gestiegen/gesunken/gefallen), „Aktive PEM" zeigt den tatsächlichen Gesamtschwere-Wert, und die Tabellen-Pfeile zeigen die echte Zahlenrichtung (Farbe = besser/schlechter, neutral bleibt grau).
+
 ## v2.5.6 – 2026-09-12
 
 ### Geändert
