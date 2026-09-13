@@ -28,6 +28,8 @@ Beim Öffnen startet die App in der **Heatmap**-Ansicht.
 Zeigt **einen** Messwert über die Zeit als Linie.
 
 * Wähle oben per Tipp-Chip den gewünschten Messwert (z. B. Zustand, Bell, Fatigue, PEM, Belastung oder objektive Messwerte wie Ruhepuls, HRV, SpO₂).
+* **Zeitraum:** Unter der Grafik kannst du den angezeigten Zeitraum wählen (7 / 14 / 30 / 90 Tage / Alle). Die Zeile unter der Grafik zeigt den gewählten Zeitraum.
+* **Akuter Crash:** Ein kleines ▲ markiert den Tag, an dem du im Tracker einen Crash-Beginn eingetragen hast.
 * **Persönliche Baseline** ist eine gestrichelte Linie (dein ungefähres „Normalniveau"). Sie lässt sich über den Schalter ein-/ausblenden.
 * Tippe auf das Diagramm, um dir den Wert eines bestimmten Tages anzeigen zu lassen.
 * **Lücken** bleiben sichtbar: Ein Tag ohne Angabe wird nicht als 0 gezeichnet.
@@ -56,6 +58,10 @@ Darunter steht, **warum** die App zu dieser Einschätzung kommt (z. B. gestiegen
 * **Alle Skalen 0–4** (Symptome, Belastung, Pacing, Arbeitsfähigkeit, Teilhabe): höher = schlechter/stärker.
 * **Zustand (0–10) und Bell (0–100):** höher = besser.
 
-## 4. Wichtiger Hinweis
+## 4. Darstellung anpassen
+
+* In der **Hilfe**-Ansicht kannst du eine **größere Schrift** aktivieren. Die Einstellung wird lokal gespeichert.
+
+## 5. Wichtiger Hinweis
 
 Die PEM-typische Verzögerung (12–72 h) bedeutet: Ein Crash kann sich **erst Tage nach** einer Belastung zeigen. Die Risiko-Anzeige ist bewusst vorsichtig und kann einen bevorstehenden Crash nicht sicher vorhersagen. Sie ersetzt keine ärztliche Beratung.

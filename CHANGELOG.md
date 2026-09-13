@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.7.0 – 2026-09-13
+
+### Neu
+
+- **Trend-Zeitraum:** Unter der Grafik lässt sich der angezeigte Zeitraum wählen (7 / 14 / 30 / 90 Tage / Alle). Die Ausgabe-Zeile zeigt den gewählten Zeitraum.
+- **Crash-Marker:** Tage, an denen ein akuter Crash eingetragen wurde („Crash-Beginn jetzt eintragen"), werden im Trend mit einem kleinen ▲ markiert.
+- **Große Schrift:** In der Hilfe-Ansicht lässt sich eine größere Schrift aktivieren (wird lokal gespeichert).
+- **Beispieldaten:** enthalten jetzt alle Messwerte (Ruhepuls, HRV, SpO₂ …) und Crash-Marker.
+
 ## v2.6.0 – 2026-09-13
 
 ### Neu

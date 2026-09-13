@@ -214,6 +214,14 @@
   var records = [];
   var selectedMetric = 'zustand_0_10';
   var baselineOn = true;
+  var selectedRange = 'all';
+  var RANGE_OPTIONS = [
+    { value: '7', label: '7 Tage' },
+    { value: '14', label: '14 Tage' },
+    { value: '30', label: '30 Tage' },
+    { value: '90', label: '90 Tage' },
+    { value: 'all', label: 'Alle' }
+  ];
 
   function fmtShort(ts) {
     return new Date(ts).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
@@ -229,6 +237,23 @@
       if (typeof record[k] === 'number') vals.push(record[k]);
     });
     return vals.length ? mean(vals) : null;
+  }
+
+  // Akuter Crash: pem_ausloeser beginnt mit dem Zeitstempel "[HH:MM] " (vom ⚡-Button).
+  function isAcuteCrash(rec) {
+    var s = rec.pem_ausloeser;
+    return typeof s === 'string' && s.charAt(0) === '[';
+  }
+
+  function visibleRecords() {
+    if (selectedRange === 'all') return records;
+    var days = parseInt(selectedRange, 10);
+    return records.slice(Math.max(0, records.length - days));
+  }
+
+  function rangeLabel() {
+    if (selectedRange === 'all') return 'alle Tage';
+    return 'letzte ' + selectedRange + ' Tage';
   }
 
   // Liefert den Messwert eines Datensatzes für eine Auswahl (Feld-Key oder 'domain:key')
@@ -384,6 +409,7 @@
     records = normalizeRecords(list);
     updateImportStatus();
     renderTrendChips();
+    renderRangeChips();
     renderTrend();
     renderHeatmap();
     renderRisk();
@@ -520,9 +546,19 @@
         teilhabe_0_4: crash ? 3 : 2,
         schlafdauer_h: crash ? 5 : 7,
         schritte: crash ? 300 : 1500 + Math.round(rand() * 4000),
+        puls_ruhe: crash ? 72 + Math.round(rand() * 2) : (postCrash ? 69 + Math.round(rand() * 2) : 58 + Math.round(rand() * 4)),
+        puls_avg: crash ? 86 + Math.round(rand() * 6) : 73 + Math.round(rand() * 6),
+        puls_max: crash ? 135 + Math.round(rand() * 10) : 113 + Math.round(rand() * 12),
+        hrv: crash ? 30 + Math.round(rand() * 4) : (postCrash ? 38 + Math.round(rand() * 4) : 47 + Math.round(rand() * 6)),
+        spo2: 97 + Math.round(rand() * 2),
+        atemfrequenz: 12 + Math.round(rand() * 4),
+        temperatur: 36.5 + Math.round(rand() * 4) / 10,
+        blutdruck_sys: 118 + Math.round(rand() * 8),
+        blutdruck_dia: 77 + Math.round(rand() * 6),
+        gewicht: 72 + Math.round(rand() * 20) / 10,
 
         pem_belastungsdatum: crash ? iso : null,
-        pem_ausloeser: crash ? 'Überanstrengung' : null,
+        pem_ausloeser: crash ? '[13:45] Überanstrengung' : null,
         pem_gesamt_0_4: crash ? 3 : null,
         pem_dauer_h: crash ? 24 + Math.round(rand() * 48) : null,
 
@@ -641,7 +677,26 @@
 
     // Zusammenfassung (eingeklappte Zeile) auf die aktuelle Auswahl setzen
     var summary = document.getElementById('chip-summary');
-    if (summary) summary.textContent = 'Messwert: ' + metricLabel(selectedMetric);
+    if (summary) summary.textContent = 'Wert: ' + metricLabel(selectedMetric);
+  }
+
+  function renderRangeChips() {
+    var container = document.getElementById('range-chips');
+    if (!container) return;
+    container.innerHTML = '';
+    RANGE_OPTIONS.forEach(function (opt) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip' + (selectedRange === opt.value ? ' is-active' : '');
+      b.textContent = opt.label;
+      b.dataset.range = opt.value;
+      b.addEventListener('click', function () {
+        selectedRange = opt.value;
+        renderRangeChips();
+        renderTrend();
+      });
+      container.appendChild(b);
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -689,7 +744,9 @@
     var ctx = d.ctx, W = d.width, H = d.height;
     var padL = 42, padR = 12, padT = 16, padB = 40;
 
-    var values = records.map(function (r) { return getMetricValue(r, selectedMetric); });
+    var viewRecords = visibleRecords();
+    var allValues = records.map(function (r) { return getMetricValue(r, selectedMetric); });
+    var values = viewRecords.map(function (r) { return getMetricValue(r, selectedMetric); });
     var range = yRangeFor(selectedMetric, values);
 
     var plotW = W - padL - padR;
@@ -697,8 +754,8 @@
     var ticks = makeTicks(range.min, range.max);
 
     function xForDate(ts) {
-      var first = records[0].dateTs;
-      var last = records[records.length - 1].dateTs;
+      var first = viewRecords[0].dateTs;
+      var last = viewRecords[viewRecords.length - 1].dateTs;
       var span = last - first || 86400000;
       return padL + ((ts - first) / span) * plotW;
     }
@@ -729,19 +786,19 @@
 
     // X-Achsen-Beschriftung (Datumsangaben)
     var labelCount = Math.max(2, Math.min(6, Math.floor(plotW / 80)));
-    var step = Math.max(1, Math.ceil(records.length / labelCount));
+    var step = Math.max(1, Math.ceil(viewRecords.length / labelCount));
     ctx.textAlign = 'center';
-    for (var i = 0; i < records.length; i += step) {
-      var x = xForDate(records[i].dateTs);
-      ctx.fillText(fmtShort(records[i].dateTs), x, H - padB + 16);
+    for (var i = 0; i < viewRecords.length; i += step) {
+      var x = xForDate(viewRecords[i].dateTs);
+      ctx.fillText(fmtShort(viewRecords[i].dateTs), x, H - padB + 16);
     }
     // letzten Tag immer beschriften, wenn nicht bereits enthalten
-    var lastX = xForDate(records[records.length - 1].dateTs);
-    ctx.fillText(fmtShort(records[records.length - 1].dateTs), lastX, H - padB + 16);
+    var lastX = xForDate(viewRecords[viewRecords.length - 1].dateTs);
+    ctx.fillText(fmtShort(viewRecords[viewRecords.length - 1].dateTs), lastX, H - padB + 16);
 
     // Baseline (Median über alle vorhandenen Werte)
     if (baselineOn) {
-      var baseVals = values.filter(function (v) { return typeof v === 'number'; });
+      var baseVals = allValues.filter(function (v) { return typeof v === 'number'; });
       var med = median(baseVals);
       if (med !== null && baseVals.length >= 2) {
         var by = yFor(med);
@@ -767,6 +824,19 @@
     ctx.lineTo(W - padR, padT + plotH);
     ctx.stroke();
 
+    // Akute Crash-Marker (pem_ausloeser beginnt mit "[HH:MM]")
+    for (var ci = 0; ci < viewRecords.length; ci++) {
+      if (!isAcuteCrash(viewRecords[ci])) continue;
+      var cx = xForDate(viewRecords[ci].dateTs);
+      ctx.fillStyle = '#e08a5a';
+      ctx.beginPath();
+      ctx.moveTo(cx, padT + plotH);
+      ctx.lineTo(cx - 3, padT + plotH + 7);
+      ctx.lineTo(cx + 3, padT + plotH + 7);
+      ctx.closePath();
+      ctx.fill();
+    }
+
     // Daten-Linie mit Lücken
     var good = metricIsGood(selectedMetric);
     var lineColor = '#7fb3d5';
@@ -778,13 +848,13 @@
 
     var started = false;
     ctx.beginPath();
-    for (var j = 0; j < records.length; j++) {
+    for (var j = 0; j < viewRecords.length; j++) {
       var val = values[j];
       if (typeof val !== 'number') {
         started = false;
         continue;
       }
-      var px = xForDate(records[j].dateTs);
+      var px = xForDate(viewRecords[j].dateTs);
       var py = yFor(val);
       if (!started) { ctx.moveTo(px, py); started = true; }
       else ctx.lineTo(px, py);
@@ -793,23 +863,23 @@
 
     // Punkte
     ctx.fillStyle = lineColor;
-    for (var k = 0; k < records.length; k++) {
+    for (var k = 0; k < viewRecords.length; k++) {
       if (typeof values[k] !== 'number') continue;
       ctx.beginPath();
-      ctx.arc(xForDate(records[k].dateTs), yFor(values[k]), 3.5, 0, Math.PI * 2);
+      ctx.arc(xForDate(viewRecords[k].dateTs), yFor(values[k]), 3.5, 0, Math.PI * 2);
       ctx.fill();
     }
 
     // Pointer-/Klick-Auswertung speichern
-    canvas._trendData = { records: records, values: values, xForDate: xForDate, padL: padL, padR: padR, good: good };
+    canvas._trendData = { records: viewRecords, values: values, xForDate: xForDate, padL: padL, padR: padR, good: good };
 
     // Standard-Ausgabe: letzter Wert
     var lastVal = null, lastRec = null;
-    for (var m = records.length - 1; m >= 0; m--) {
-      if (typeof values[m] === 'number') { lastVal = values[m]; lastRec = records[m]; break; }
+    for (var m = viewRecords.length - 1; m >= 0; m--) {
+      if (typeof values[m] === 'number') { lastVal = values[m]; lastRec = viewRecords[m]; break; }
     }
     if (lastRec) {
-      readout.textContent = 'Zuletzt: ' + fmtFull(lastRec.dateTs) + ' · ' + metricLabel(selectedMetric) + ' ' + fmtNumber(lastVal);
+      readout.textContent = 'Zeitraum: ' + rangeLabel() + ' · Zuletzt: ' + fmtFull(lastRec.dateTs) + ' · ' + metricLabel(selectedMetric) + ' ' + fmtNumber(lastVal);
     } else {
       readout.textContent = 'Keine Werte für diese Auswahl vorhanden.';
     }
@@ -831,8 +901,10 @@
     }
     if (best < 0) return;
     var val = d.values[best];
-    var txt = fmtFull(d.records[best].dateTs) + ' · ' + metricLabel(selectedMetric) + ': ';
+    var rec = d.records[best];
+    var txt = fmtFull(rec.dateTs) + ' · ' + metricLabel(selectedMetric) + ': ';
     txt += (typeof val === 'number') ? fmtNumber(val) : 'keine Angabe';
+    if (isAcuteCrash(rec)) txt += ' · Crash';
     readout.textContent = txt;
   }
 
@@ -1171,7 +1243,7 @@
       rows.push({ label: metricLabel(key), recent: s.recentMean, base: s.baseMedian, dir: FIELDS_BY_KEY[key].dir });
     });
 
-    var html = '<table class="risk-table"><thead><tr><th>Messwert</th><th class="num">Baseline</th><th class="num">Ø 3 Tage</th><th class="num">Veränderung</th></tr></thead><tbody>';
+    var html = '<table class="risk-table"><thead><tr><th>Wert</th><th class="num">Baseline</th><th class="num">Ø 3 Tage</th><th class="num">Veränderung</th></tr></thead><tbody>';
     rows.forEach(function (r) {
       var deltaTxt = '–';
       var cls = 'delta-flat';
@@ -1202,6 +1274,13 @@
   // Initialisierung
   // ---------------------------------------------------------------------------
 
+  function applyFontPreference() {
+    var on = localStorage.getItem('mecfs_graph_large_font') === '1';
+    document.documentElement.classList.toggle('font-large', on);
+    var t = document.getElementById('font-toggle');
+    if (t) t.checked = on;
+  }
+
   function init() {
     document.querySelectorAll('.tab').forEach(function (btn) {
       btn.addEventListener('click', function () { switchView(btn.dataset.view); });
@@ -1228,6 +1307,16 @@
       renderTrend();
     });
 
+    applyFontPreference();
+    var fontToggle = document.getElementById('font-toggle');
+    if (fontToggle) {
+      fontToggle.addEventListener('change', function () {
+        if (fontToggle.checked) localStorage.setItem('mecfs_graph_large_font', '1');
+        else localStorage.removeItem('mecfs_graph_large_font');
+        document.documentElement.classList.toggle('font-large', fontToggle.checked);
+      });
+    }
+
     window.addEventListener('resize', function () {
       var active = document.querySelector('.view:not([hidden])');
       if (!active) return;
@@ -1240,6 +1329,7 @@
     document.getElementById('heatmap-canvas').addEventListener('click', heatmapPointer);
 
     renderTrendChips();
+    renderRangeChips();
     renderTrend();
     renderHeatmap();
     renderRisk();

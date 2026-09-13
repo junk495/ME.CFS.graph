@@ -26,6 +26,10 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+html.font-large {
+  font-size: 18px;
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -198,6 +202,13 @@ main {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+}
+
+.range-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 4px;
 }
 
 .chip {
