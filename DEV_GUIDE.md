@@ -55,7 +55,7 @@ Kurze technische Referenz für Wartung und Weiterentwicklung von **ME.CFS.graph*
 ## Release-Prozess
 
 1. Code ändern.
-2. `VERSION` in `sw.js` erhöhen — Semantic Versioning (`MAJOR.MINOR.PATCH`), z. B. `'v2.5.1'` → `'v2.6.0'` (neue Funktion/Ansicht) oder `'v2.5.2'` (Bugfix).
+2. `VERSION` in `sw.js` und `<meta name="app-version">` in `index.html` erhöhen — Semantic Versioning (`MAJOR.MINOR.PATCH`), z. B. `'v2.5.1'` → `'v2.6.0'` (neue Funktion/Ansicht) oder `'v2.5.2'` (Bugfix).
 3. Eintrag in `CHANGELOG.md` mit derselben Versionsnummer ergänzen.
 4. Pushen → GitHub Pages deployt automatisch.
 5. Nutzer erhalten beim nächsten Öffnen den Hinweis „Neue Version verfügbar“ mit „Jetzt aktualisieren“. Der neue Service Worker wird über `skipWaiting` sofort aktiv und übernimmt (`clients.claim`); nach dem Neuladen ist der neue Stand aktiv.

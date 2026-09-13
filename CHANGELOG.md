@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.5.3 – 2026-09-12
+
+### Geändert
+
+* **Version sichtbar:** Die geladene Version wird jetzt unten in der Hilfe-Ansicht angezeigt.
+
 ## v2.5.2 – 2026-09-12
 
 ### Geändert

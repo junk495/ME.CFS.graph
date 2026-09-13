@@ -12,6 +12,8 @@ $trackerChg = Join-Path $trackerRoot 'CHANGELOG.md'
 $graphChg   = Join-Path $graphRoot 'CHANGELOG.md'
 $trackerMan = Join-Path $trackerRoot 'manifest.json'
 $graphMan   = Join-Path $graphRoot 'manifest.json'
+$trackerHtml = Join-Path $trackerRoot 'index.html'
+$graphHtml   = Join-Path $graphRoot 'index.html'
 
 $errors = 0
 function Ok($m)  { Write-Host "  [OK] $m" -ForegroundColor Green }
@@ -33,18 +35,22 @@ foreach ($k in $all) {
 }
 if ($mismatch -eq 0 -and $all.Count -gt 0) { Ok "$($all.Count) Felder, Keys + Header identisch" }
 
-Write-Host "`n=== 2. Version (sw.js VERSION == CHANGELOG) ===" -ForegroundColor Cyan
-function Check-Version($name, $swPath, $chgPath) {
+Write-Host "`n=== 2. Version (sw.js == Meta-Tag == CHANGELOG) ===" -ForegroundColor Cyan
+function Check-Version($name, $swPath, $htmlPath, $chgPath) {
   $sw = [System.IO.File]::ReadAllText($swPath)
+  $html = [System.IO.File]::ReadAllText($htmlPath)
   $chg = [System.IO.File]::ReadAllText($chgPath)
   if ($sw -notmatch "VERSION\s*=\s*'([^']+)'") { Err "${name}: VERSION nicht gefunden"; return }
   $v = $Matches[1]
+  if ($html -notmatch '<meta name="app-version" content="([^"]+)"') { Err "${name}: Meta-Tag nicht gefunden"; return }
+  $meta = $Matches[1]
   if ($chg -notmatch '##\s+(\S+)') { Err "${name}: Changelog-Eintrag nicht gefunden"; return }
   $top = $Matches[1]
-  if ($v -eq $top) { Ok "${name}: $v stimmt ueberein" } else { Err "${name}: sw.js='$v' Changelog='$top'" }
+  if ($v -eq $meta -and $meta -eq $top) { Ok "${name}: $v (sw.js / Meta / Changelog) stimmen ueberein" }
+  else { Err "${name}: sw.js='$v' Meta='$meta' Changelog='$top'" }
 }
-Check-Version 'Tracker' $trackerSw $trackerChg
-Check-Version 'Graph' $graphSw $graphChg
+Check-Version 'Tracker' $trackerSw $trackerHtml $trackerChg
+Check-Version 'Graph' $graphSw $graphHtml $graphChg
 
 Write-Host "`n=== 3. manifest.json valide ===" -ForegroundColor Cyan
 foreach ($m in @(@('Tracker', $trackerMan), @('Graph', $graphMan))) {

@@ -391,3 +391,10 @@ li {
     min-width: 0;
   }
 }
+
+.app-version {
+  margin-top: 1.5rem;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  text-align: center;
+}

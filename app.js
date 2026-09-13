@@ -1174,7 +1174,12 @@
     }
   }
 
-  if (document.readyState === 'loading') {
+  // Version anzeigen (aus Meta-Tag <meta name="app-version">)
+  (function () {
+    var meta = document.querySelector('meta[name="app-version"]');
+    var el = document.getElementById('app-version');
+    if (meta && el) el.textContent = 'Version ' + meta.getAttribute('content');
+  })();  if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
