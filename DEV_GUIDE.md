@@ -27,12 +27,12 @@ Kurze technische Referenz für Wartung und Weiterentwicklung von **ME.CFS.graph*
 
 | Bereich | Funktionen |
 |---|---|
-| Konstanten | `FIELD_DEFS`, `DOMAINS`, `TREND_GROUPS`, `RECENT_WINDOW`, `BASELINE_WINDOW` |
+| Konstanten | `FIELD_DEFS`, `DOMAINS`, `TREND_GROUPS`, `WORSENING_METRICS`, `LOAD_METRICS`, `RECENT_WINDOW`, `BASELINE_WINDOW` |
 | Parser | `recordsFromCSV`, `recordsFromJSON`, `normalizeRecords` |
 | core.js | `norm`, `parseNumber`, `median`, `mean`, `parseDate`, `parseCSVLine` |
 | Import | `loadRecords`, `handleFile`, `buildDemo` |
 | Navigation | `switchView` |
-| Trend | `renderTrendChips`, `renderTrend`, `trendPointer`, `yRangeFor`, `makeTicks` |
+| Trend | `renderTrendChips`, `renderRangeChips`, `renderTrend`, `trendPointer`, `visibleRecords`, `rangeLabel`, `isAcuteCrash`, `yRangeFor`, `makeTicks` |
 | Heatmap | `renderHeatmap`, `heatmapPointer`, `colorForScale`, `domainMean` |
 | Risiko | `metricStats`, `computeRisk`, `renderRisk` |
 | Canvas-Helfer | `setupCanvas`, `relativeX` |
@@ -40,7 +40,7 @@ Kurze technische Referenz für Wartung und Weiterentwicklung von **ME.CFS.graph*
 ## Neues Feld hinzufügen (Checkliste)
 
 1. In `FIELD_DEFS` einen Eintrag ergänzen: `[key, 'Header (CSV)', 'Label', typ, richtung]`.
-   * `typ`: `date`, `text`, `0_4`, `0_10`, `0_100`, `hours`, `minutes`, `steps`.
+   * `typ`: `date`, `text`, `0_4`, `0_10`, `0_100`, `hours`, `minutes`, `steps`, `bpm`, `ms`, `percent`, `rate`, `celsius`, `mmhg`, `kg`.
    * `richtung`: `worse` (höher = schlechter), `better` (höher = besser), `neutral`.
 2. Falls es in einen Bereich gehört: in `DOMAINS` bei der passenden Domäne ergänzen.
 3. Optional in `TREND_GROUPS` aufnehmen, um es im Trend-Diagramm auswählbar zu machen.

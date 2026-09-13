@@ -30,7 +30,7 @@ Nein. Leere Felder gelten als Lücke („keine Angabe") und werden nicht als 0 g
 Nein. Sie ist eine transparente, regelbasierte Orientierungshilfe und kein Diagnose- oder Medizinprodukt.
 
 **Wie kommt die Einschätzung zustande?**
-Sie vergleicht die letzten 3 Tage mit deinem persönlichen Basisniveau (Median der letzten 14 Tage) und bewertet fünf Faktoren: Symptom-Anstieg, Zustand/Bell-Abfall, hohe Belastung, aktive PEM und Schlaf. Details stehen im <a href="./ERLAEUTERUNGEN.md" target="_blank" rel="noopener noreferrer">Regelwerk</a>.
+Sie vergleicht die letzten 3 Tage mit deinem persönlichen Basisniveau (Median der letzten 14 Tage) und bewertet sechs Faktoren: Symptom-Anstieg, Zustand/Bell-Abfall, hohe Belastung, aktive PEM, Schlaf und objektive Überlastung (Ruhepuls/HRV). Details stehen im <a href="./ERLAEUTERUNGEN.md" target="_blank" rel="noopener noreferrer">Regelwerk</a>.
 
 **Warum wird bei hoher Belastung gewarnt, obwohl es mir gerade gut geht?**
 Weil PEM oft **verzögert** (12–72 h) auftritt. Hohe Belastung bei bereits steigenden Symptomen ist ein frühes Warnsignal – bevor der Crash selbst messbar wird.
