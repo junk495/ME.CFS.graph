@@ -165,8 +165,7 @@
       name: 'Alltag',
       items: [
         { key: 'liegezeit_h' },
-        { key: 'hilfebedarf_min' },
-        { key: 'schritte' }
+        { key: 'hilfebedarf_min' }
       ]
     },
     {
@@ -177,6 +176,22 @@
         { key: 'schlaf_durchschlaf' },
         { key: 'schlaf_rhythmus' },
         { key: 'schlaf_hypersomnie' }
+      ]
+    },
+    {
+      name: 'Messwerte',
+      items: [
+        { key: 'schritte' },
+        { key: 'puls_ruhe' },
+        { key: 'puls_avg' },
+        { key: 'puls_max' },
+        { key: 'hrv' },
+        { key: 'spo2' },
+        { key: 'atemfrequenz' },
+        { key: 'temperatur' },
+        { key: 'blutdruck_sys' },
+        { key: 'blutdruck_dia' },
+        { key: 'gewicht' }
       ]
     },
     {
@@ -243,17 +258,35 @@
   // y-Skala für das Trend-Diagramm
   function yRangeFor(metric, values) {
     var type = metric.indexOf('domain:') === 0 ? '0_4' : FIELDS_BY_KEY[metric].type;
-    var fixedMax = null, fixedMin = 0;
-    if (type === '0_4') fixedMax = 4;
-    else if (type === '0_10') fixedMax = 10;
-    else if (type === '0_100') fixedMax = 100;
 
     var nums = values.filter(function (v) { return typeof v === 'number'; });
     var dataMax = nums.length ? Math.max.apply(null, nums) : 1;
     var dataMin = nums.length ? Math.min.apply(null, nums) : 0;
 
-    var min = Math.min(fixedMin, dataMin);
-    var max = fixedMax !== null ? Math.max(fixedMax, dataMax) : dataMax * 1.15;
+    var min, max;
+    if (type === '0_4' || type === '0_10' || type === '0_100') {
+      var fixed = type === '0_4' ? 4 : (type === '0_10' ? 10 : 100);
+      min = Math.min(0, dataMin);
+      max = Math.max(fixed, dataMax);
+    } else if (type === 'percent') {
+      // SpO₂: sinnvoller Bereich um 95–100 %, bei Ausreißern erweitert
+      min = Math.min(85, dataMin);
+      max = Math.max(100, dataMax);
+    } else if (type === 'celsius') {
+      // Körpertemperatur: um die Daten zentriert, nicht ab 0
+      min = Math.min(34, dataMin - 1);
+      max = dataMax + 1;
+    } else if (type === 'kg') {
+      min = Math.max(0, dataMin - 2);
+      max = dataMax + 2;
+    } else if (type === 'mmhg') {
+      min = Math.max(0, dataMin - 10);
+      max = dataMax + 10;
+    } else {
+      min = 0;
+      max = dataMax * 1.15;
+    }
+
     if (max <= min) max = min + 1;
     return { min: min, max: max };
   }
@@ -1048,6 +1081,29 @@
       points: p5
     });
 
+    // Faktor 6: Objektive Überlastung (Ruhepuls-Anstieg oder HRV-Abfall)
+    var pr = metricStats('puls_ruhe');
+    var hv = metricStats('hrv');
+    var p6 = 0;
+    var prUp = (pr.recentMean !== null && pr.baseMedian !== null) ? (pr.recentMean - pr.baseMedian) : null;
+    var hvDrop = (hv.recentMean !== null && hv.baseMedian !== null && hv.baseMedian > 0) ? ((hv.baseMedian - hv.recentMean) / hv.baseMedian) : null;
+    var objText = 'Keine ausreichenden Messwerte (Ruhepuls/HRV).';
+    if (prUp !== null && prUp >= 5) {
+      p6 = 1;
+      objText = 'Ruhepuls Ø 3 Tage ' + fmtNumber(pr.recentMean) + ' bpm (Baseline ' + fmtNumber(pr.baseMedian) + ' bpm) — erhöht.';
+    } else if (hvDrop !== null && hvDrop >= 0.25) {
+      p6 = 1;
+      objText = 'HRV Ø 3 Tage ' + fmtNumber(hv.recentMean) + ' ms (Baseline ' + fmtNumber(hv.baseMedian) + ' ms) — reduziert.';
+    } else if (pr.recentMean !== null || hv.recentMean !== null) {
+      objText = 'Ruhepuls und HRV im persönlichen Bereich.';
+    }
+    points += p6;
+    factors.push({
+      text: objText,
+      value: 'Objektive Überlastung',
+      points: p6
+    });
+
     var level, label, summary;
     if (points <= 1) {
       level = 'stable';
@@ -1098,7 +1154,7 @@
     gauge.className = 'risk-gauge risk-' + risk.level;
     gauge.innerHTML = '<div class="risk-label">Einschätzung</div>' +
       '<div class="risk-level">' + risk.label + '</div>' +
-      '<div class="risk-label">' + risk.points + ' Warnpunkte (max. 9)</div>';
+      '<div class="risk-label">' + risk.points + ' Warnpunkte (max. 10)</div>';
     summary.textContent = risk.summary;
 
     factorList.innerHTML = '';
@@ -1110,7 +1166,7 @@
 
     // Kennzahlen-Tabelle
     var rows = [];
-    ['zustand_0_10', 'bell_0_100', 'fatigue_0_4', 'pem_heute_0_4', 'belastung_koerperlich_0_4', 'belastung_kognitiv_0_4', 'belastung_reiz_0_4', 'schlafqualitaet_0_4', 'liegezeit_h', 'schritte'].forEach(function (key) {
+    ['zustand_0_10', 'bell_0_100', 'fatigue_0_4', 'pem_heute_0_4', 'belastung_koerperlich_0_4', 'belastung_kognitiv_0_4', 'belastung_reiz_0_4', 'schlafqualitaet_0_4', 'liegezeit_h', 'schritte', 'puls_ruhe', 'hrv'].forEach(function (key) {
       var s = metricStats(key);
       rows.push({ label: metricLabel(key), recent: s.recentMean, base: s.baseMedian, dir: FIELDS_BY_KEY[key].dir });
     });

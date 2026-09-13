@@ -27,7 +27,7 @@ Beim Öffnen startet die App in der **Heatmap**-Ansicht.
 
 Zeigt **einen** Messwert über die Zeit als Linie.
 
-* Wähle oben per Tipp-Chip den gewünschten Messwert (z. B. Zustand, Bell, Fatigue, PEM, Belastung).
+* Wähle oben per Tipp-Chip den gewünschten Messwert (z. B. Zustand, Bell, Fatigue, PEM, Belastung oder objektive Messwerte wie Ruhepuls, HRV, SpO₂).
 * **Persönliche Baseline** ist eine gestrichelte Linie (dein ungefähres „Normalniveau"). Sie lässt sich über den Schalter ein-/ausblenden.
 * Tippe auf das Diagramm, um dir den Wert eines bestimmten Tages anzeigen zu lassen.
 * **Lücken** bleiben sichtbar: Ein Tag ohne Angabe wird nicht als 0 gezeichnet.
@@ -49,7 +49,7 @@ Zeigt eine **regelbasierte Einschätzung** mit drei Stufen:
 * 🟡 **beobachten**
 * 🔴 **hohes Crash-Risiko**
 
-Darunter steht, **warum** die App zu dieser Einschätzung kommt (z. B. gestiegene Symptome, hohe Belastung, aktives PEM). Das ist als Orientierung gedacht – keine medizinische Vorhersage.
+Darunter steht, **warum** die App zu dieser Einschätzung kommt (z. B. gestiegene Symptome, hohe Belastung, aktives PEM, erhöhter Ruhepuls oder gesunkene HRV). Das ist als Orientierung gedacht – keine medizinische Vorhersage.
 
 ## 3. Was bedeuten die Skalen?
 

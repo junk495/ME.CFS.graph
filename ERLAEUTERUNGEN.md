@@ -39,13 +39,14 @@ Diese Richtung wird bei der Trend-Anzeige und der Risiko-Berechnung berücksicht
 
 Die Einschätzung ist **transparent und regelbasiert** – kein maschinelles „Black Box"-Lernen. Sie vergleicht die **letzten 3 Tage** mit dem **persönlichen Basisniveau** (Median der vorangegangenen 14 Tage).
 
-### Fünf Faktoren (Warnpunkte)
+### Sechs Faktoren (Warnpunkte)
 
 1. **Symptom-Anstieg:** Steigen Fatigue, PEM, Belastung oder Schlafqualität deutlich über das Basisniveau?
 2. **Zustand-/Bell-Abfall:** Sinken Gesamtzustand oder Bell-Score?
 3. **Hohe aktuelle Belastung:** Sind körperliche, kognitive oder Reiz-Belastung aktuell hoch?
 4. **Aktive PEM:** Liegt PEM heute oder in den letzten Tagen vor?
 5. **Schlaf:** Ist die Schlafqualität schlecht oder die Dauer sehr kurz?
+6. **Objektive Überlastung:** Ist der Ruhepuls deutlich erhöht oder die HRV deutlich gesunken (gegenüber dem persönlichen Basisniveau)?
 
 Die Summe der Warnpunkte ergibt eine von drei Stufen:
 
@@ -60,6 +61,10 @@ Die genauen Schwellenwerte stehen im <a href="./DATENMODELL.md" target="_blank" 
 ### Warum „Belastung" ein Warnsignal ist
 
 Da PEM verzögert auftritt, ist eine **hohe Belastung bei bereits steigenden Symptomen** ein besonders wichtiger Hinweis – oft bevor der Crash selbst messbar ist. Die Einschätzung ist deshalb bewusst vorsichtig.
+
+### Warum Ruhepuls und HRV Warnsignale sind
+
+Ein **erhöhter Ruhepuls** und eine **gesunkene Herzfrequenz-Variabilität (HRV)** können auf eine anhaltende körperliche Überlastung (PEM) hinweisen. Sie sind objektive, vom Gerät gemessene Ergänzungen zu den subjektiven Symptomen. Da beide Werte aber auch durch andere Faktoren (z. B. Infekt, schlechte Nacht, Alkohol) beeinflusst werden können, fließen sie nur **konservativ** ein (max. 1 Warnpunkt).
 
 ## 6. Grenzen
 

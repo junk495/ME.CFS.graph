@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.6.0 – 2026-09-13
+
+### Neu
+
+- **Messwerte im Trend:** Neue Gruppe „Messwerte" macht alle objektiven Messwerte (Ruhepuls, Puls Ø/Maximum, HRV, SpO₂, Atemfrequenz, Körpertemperatur, Blutdruck, Gewicht, Schritte) als Zeitreihe auswählbar — inkl. passender Y-Achsen.
+- **Objektiver Risiko-Faktor:** Der Crash-Risiko-Score berücksichtigt jetzt zusätzlich eine objektive Überlastung (Ruhepuls-Anstieg ≥ 5 bpm oder HRV-Abfall ≥ 25 % gegenüber der Baseline, konservativ max. +1 Warnpunkt).
+
+### Geändert
+
+- **Kennzahlen-Tabelle:** Ruhepuls und HRV werden jetzt mit „Baseline vs. Ø 3 Tage" angezeigt.
+- **Warnpunkte:** Maximum von 9 auf 10 erhöht.
+
 ## v2.5.8 – 2026-09-13
 
 ### Geändert

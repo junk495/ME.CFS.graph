@@ -147,7 +147,7 @@ Ein Bereichswert ist der Mittelwert aller vorhandenen Werte des Bereichs an eine
 * Mittelwert der letzten 3 Tage vs. Median der vorangegangenen 14 Tage.
 * Bei `better`-Metriken ist die Verschlechterung `baseline − recent`; bei `worse`-Metriken `recent − baseline`. Ein positiver Wert bedeutet also „schlechter".
 
-**Fünf Faktoren, die Warnpunkte ergeben (max. 9):**
+**Sechs Faktoren, die Warnpunkte ergeben (max. 10):**
 
 | # | Faktor | Schwelle | Punkte |
 |---|---|---|---|
@@ -156,6 +156,7 @@ Ein Bereichswert ist der Mittelwert aller vorhandenen Werte des Bereichs an eine
 | 3 | Hohe aktuelle Belastung (Mittel körperlich/kognitiv/Reize) | ≥ 2,0 → 1 Punkt; ≥ 2,5 → 2 Punkte | 0–2 |
 | 4 | Aktive PEM (PEM-Gesamtschwere der letzten Tage ≥ 1 oder PEM heute ≥ 2) | PEM heute ≥ 1 → 1 Punkt; sonst → 2 Punkte | 0–2 |
 | 5 | Schlaf (Qualität ≥ 3 oder Dauer < 6 h) | erfüllt → 1 Punkt | 0–1 |
+| 6 | Objektive Überlastung (Ruhepuls-Anstieg oder HRV-Abfall) | Ruhepuls ≥ Baseline + 5 bpm oder HRV ≤ Baseline − 25 % → 1 Punkt | 0–1 |
 
 **Ausgabe-Stufen:**
 
