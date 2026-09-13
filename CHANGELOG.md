@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.5.2 – 2026-09-12
+
+### Geändert
+
+* **Code-Struktur:** Reine Hilfsfunktionen (Zahlen-/Datum-/CSV-Parsing, Median/Mittelwert) nach `core.js` ausgelagert — testbar über `tests.html` (nur Entwicklung).
+* **Leerer Zustand:** Trend und Heatmap verweisen bei fehlenden Daten jetzt klarer auf die Lade-Buttons („Tracker", „CSV/JSON", „Beispiel").
+
 ## v2.5.1 – 2026-09-12
 
 ### Behoben

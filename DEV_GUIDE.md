@@ -9,6 +9,8 @@ Kurze technische Referenz für Wartung und Weiterentwicklung von **ME.CFS.graph*
 | `index.html` | SPA mit vier Ansichten (Trend, Heatmap, Crash-Risiko, Hilfe) |
 | `style.css` | Reines CSS (Dark Theme, Mobile-First, keine Frameworks) |
 | `app.js` | Komplette Logik (Vanilla JS, IIFE) |
+| `core.js` | Reine Hilfsfunktionen (Zahlen-/Datum-/CSV-Parsing) — von `app.js` und `tests.html` genutzt |
+| `tests.html` | Entwicklungs-Testseite für `core.js` (nicht Teil der App, nur lokal öffnen) |
 | `manifest.json` | PWA-Manifest |
 | `sw.js` | Service Worker (Cache-First, Versionierung, Update-Hinweis) |
 | `icon.svg`, `icons/` | App-Icon (SVG-Quelle + PNG 192/512, maskierbar) |
@@ -26,7 +28,8 @@ Kurze technische Referenz für Wartung und Weiterentwicklung von **ME.CFS.graph*
 | Bereich | Funktionen |
 |---|---|
 | Konstanten | `FIELD_DEFS`, `DOMAINS`, `TREND_GROUPS`, `RECENT_WINDOW`, `BASELINE_WINDOW` |
-| Parser | `parseCSVLine`, `recordsFromCSV`, `recordsFromJSON`, `normalizeRecords` |
+| Parser | `recordsFromCSV`, `recordsFromJSON`, `normalizeRecords` |
+| core.js | `norm`, `parseNumber`, `median`, `mean`, `parseDate`, `parseCSVLine` |
 | Import | `loadRecords`, `handleFile`, `buildDemo` |
 | Navigation | `switchView` |
 | Trend | `renderTrendChips`, `renderTrend`, `trendPointer`, `yRangeFor`, `makeTicks` |

@@ -1,6 +1,14 @@
 (function () {
   'use strict';
 
+  // Reine Hilfsfunktionen (ausgelagert nach core.js, damit sie testbar sind)
+  var norm = MECFS_core.norm;
+  var parseNumber = MECFS_core.parseNumber;
+  var median = MECFS_core.median;
+  var mean = MECFS_core.mean;
+  var parseDate = MECFS_core.parseDate;
+  var parseCSVLine = MECFS_core.parseCSVLine;
+
   // ---------------------------------------------------------------------------
   // Konstanten & Feld-Definitionen
   // ---------------------------------------------------------------------------
@@ -172,52 +180,6 @@
   var selectedMetric = 'zustand_0_10';
   var baselineOn = true;
 
-  // ---------------------------------------------------------------------------
-  // Hilfsfunktionen
-  // ---------------------------------------------------------------------------
-
-  function norm(s) {
-    return String(s).replace(/\uFEFF/g, '').trim();
-  }
-
-  function parseNumber(raw) {
-    if (raw === null || raw === undefined) return null;
-    if (typeof raw === 'number') return raw;
-    var s = String(raw).trim();
-    if (s === '') return null;
-    if (s.indexOf(',') !== -1 && s.indexOf('.') === -1) {
-      s = s.replace(/\./g, '').replace(',', '.');
-    } else if (s.indexOf(',') !== -1 && s.indexOf('.') !== -1) {
-      // z. B. "1.234,56" -> "1234.56"
-      s = s.replace(/\./g, '').replace(',', '.');
-    }
-    var n = Number(s);
-    return isNaN(n) ? null : n;
-  }
-
-  function median(arr) {
-    if (!arr || arr.length === 0) return null;
-    var sorted = arr.slice().sort(function (a, b) { return a - b; });
-    var mid = Math.floor(sorted.length / 2);
-    if (sorted.length % 2 === 0) return (sorted[mid - 1] + sorted[mid]) / 2;
-    return sorted[mid];
-  }
-
-  function mean(arr) {
-    if (!arr || arr.length === 0) return null;
-    var sum = 0;
-    for (var i = 0; i < arr.length; i++) sum += arr[i];
-    return sum / arr.length;
-  }
-
-  function parseDate(s) {
-    if (!s) return null;
-    var str = String(s).trim();
-    var m = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (!m) return null;
-    return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime();
-  }
-
   function fmtShort(ts) {
     return new Date(ts).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
   }
@@ -299,27 +261,6 @@
   // ---------------------------------------------------------------------------
   // CSV/JSON-Parser
   // ---------------------------------------------------------------------------
-
-  function parseCSVLine(line) {
-    var out = [];
-    var cur = '';
-    var inQuotes = false;
-    for (var i = 0; i < line.length; i++) {
-      var ch = line[i];
-      if (inQuotes) {
-        if (ch === '"') {
-          if (line[i + 1] === '"') { cur += '"'; i++; }
-          else inQuotes = false;
-        } else cur += ch;
-      } else {
-        if (ch === '"') inQuotes = true;
-        else if (ch === ';') { out.push(cur); cur = ''; }
-        else cur += ch;
-      }
-    }
-    out.push(cur);
-    return out;
-  }
 
   function recordsFromCSV(text) {
     text = text.replace(/\uFEFF/g, '');
@@ -682,8 +623,8 @@
       empty.ctx.fillStyle = '#a7adba';
       empty.ctx.font = '14px system-ui, sans-serif';
       empty.ctx.textAlign = 'center';
-      empty.ctx.fillText('Keine Daten geladen', empty.width / 2, empty.height / 2);
-      readout.textContent = '';
+      empty.ctx.fillText('Noch keine Daten geladen', empty.width / 2, empty.height / 2);
+      readout.textContent = 'Daten oben über „Tracker", „CSV/JSON" oder „Beispiel" laden.';
       return;
     }
 
@@ -851,8 +792,8 @@
       empty.ctx.fillStyle = '#a7adba';
       empty.ctx.font = '14px system-ui, sans-serif';
       empty.ctx.textAlign = 'center';
-      empty.ctx.fillText('Keine Daten geladen', empty.width / 2, empty.height / 2);
-      readout.textContent = '';
+      empty.ctx.fillText('Noch keine Daten geladen', empty.width / 2, empty.height / 2);
+      readout.textContent = 'Daten oben über „Tracker", „CSV/JSON" oder „Beispiel" laden.';
       return;
     }
 

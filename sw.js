@@ -1,12 +1,13 @@
 (function () {
   'use strict';
 
-  var VERSION = 'v2.5.1';
+  var VERSION = 'v2.5.2';
   var CACHE_NAME = 'mecfs-graph-' + VERSION;
   var ASSETS = [
     './',
     './index.html',
     './style.css',
+    './core.js',
     './app.js',
     './manifest.json',
     './icon.svg',
