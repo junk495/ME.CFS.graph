@@ -44,7 +44,7 @@ Die Einschätzung ist **transparent und regelbasiert** – kein maschinelles „
 1. **Symptom-Anstieg:** Steigen Fatigue, PEM, Belastung oder Schlafqualität deutlich über das Basisniveau?
 2. **Zustand-/Bell-Abfall:** Sinken Gesamtzustand oder Bell-Score?
 3. **Hohe aktuelle Belastung:** Sind körperliche, kognitive oder Reiz-Belastung aktuell hoch?
-4. **Aktive PEM:** Liegt PEM heute oder in den letzten Tagen vor?
+4. **Aktive PEM:** Wie stark ist PEM heute?
 5. **Schlaf:** Ist die Schlafqualität schlecht oder die Dauer sehr kurz?
 6. **Objektive Überlastung:** Ist der Ruhepuls deutlich erhöht oder die HRV deutlich gesunken (gegenüber dem persönlichen Basisniveau)?
 

@@ -1126,17 +1126,15 @@
       points: p3
     });
 
-    // Faktor 4: Aktive PEM
-    var pemStats = metricStats('pem_gesamt_0_4');
+    // Faktor 4: Aktive PEM (nur der täglich erfasste Wert „PEM heute")
     var pemHeuteStats = metricStats('pem_heute_0_4');
-    var activePem = (pemStats.recentMean !== null && pemStats.recentMean >= 1);
     var pemHeute = pemHeuteStats.recentMean !== null ? pemHeuteStats.recentMean : 0;
     var p4 = 0;
-    if (activePem || pemHeute >= 2) p4 = 2;
+    if (pemHeute >= 2) p4 = 2;
     else if (pemHeute >= 1) p4 = 1;
     points += p4;
     factors.push({
-      text: 'PEM heute ' + fmtNumber(pemHeute) + ' (von 4), PEM-Gesamtschwere ' + fmtNumber(pemStats.recentMean !== null ? pemStats.recentMean : 0) + ' (von 4).',
+      text: 'PEM heute ' + fmtNumber(pemHeute) + ' (von 4).',
       value: 'Aktive PEM',
       points: p4
     });

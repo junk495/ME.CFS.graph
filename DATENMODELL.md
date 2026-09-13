@@ -154,7 +154,7 @@ Ein Bereichswert ist der Mittelwert aller vorhandenen Werte des Bereichs an eine
 | 1 | Symptom-Anstieg (Mittel der Deltas von Fatigue, PEM heute, körperliche/kognitive/Reiz-Belastung, Schlafqualität) | ≥ 0,5 → 1 Punkt; ≥ 1,0 → 2 Punkte | 0–2 |
 | 2 | Zustand-/Bell-Abfall | Zustand ≥ 1 oder Bell ≥ 10 → 1 Punkt; Zustand ≥ 2 oder Bell ≥ 15 → 2 Punkte | 0–2 |
 | 3 | Hohe aktuelle Belastung (Mittel körperlich/kognitiv/Reize) | ≥ 2,0 → 1 Punkt; ≥ 2,5 → 2 Punkte | 0–2 |
-| 4 | Aktive PEM (PEM-Gesamtschwere der letzten Tage ≥ 1 oder PEM heute ≥ 2) | PEM heute ≥ 1 → 1 Punkt; sonst → 2 Punkte | 0–2 |
+| 4 | Aktive PEM (PEM heute) | PEM heute ≥ 2 → 2 Punkte; ≥ 1 → 1 Punkt | 0–2 |
 | 5 | Schlaf (Qualität ≥ 3 oder Dauer < 6 h) | erfüllt → 1 Punkt | 0–1 |
 | 6 | Objektive Überlastung (Ruhepuls-Anstieg oder HRV-Abfall) | Ruhepuls ≥ Baseline + 5 bpm oder HRV ≤ Baseline − 25 % → 1 Punkt | 0–1 |
 

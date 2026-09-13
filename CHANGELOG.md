@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.8.0 – 2026-09-13
+
+### Geändert
+
+- **Crash-Risiko-Faktor „Aktive PEM" vereinfacht:** Es fließt nur noch der täglich erfasste Wert „PEM heute" ein. Die rückblickende „PEM-Gesamtschwere" (PEM-Crash-Tab) wird nicht mehr im Risiko-Score berücksichtigt, bleibt aber im Trend darstellbar.
+
 ## v2.7.0 – 2026-09-13
 
 ### Neu
