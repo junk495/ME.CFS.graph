@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.5.8 – 2026-09-13
+
+### Geändert
+
+* **Datenmodell kompatibel gehalten:** Neue Messwert-Felder aus dem Tracker (Ruhepuls, Puls Ø/Maximum, HRV, SpO₂, Atemfrequenz, Körpertemperatur, Blutdruck systolisch/diastolisch, Gewicht) werden jetzt beim CSV-/JSON-Import erkannt und übernommen. Keine neuen oder geänderten Ansichten.
+
 ## v2.5.7 – 2026-09-12
 
 ### Geändert
