@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#16181d">
-  <meta name="app-version" content="v2.5.3">
+  <meta name="app-version" content="v2.5.5">
   <meta name="description" content="ME.CFS.graph — lokale, grafische Auswertung der ME/CFS-Symptom-Tracker-Daten (CSV/JSON) mit Verlaufs- und Crash-Risiko-Orientierung.">
   <title>ME.CFS.graph</title>
   <link rel="manifest" href="manifest.json">
@@ -29,9 +29,10 @@
     </div>
   </header>
 
-  <div class="update-banner" id="update-banner" hidden>
-    <span>Neue Version verfügbar</span>
-    <button class="button" id="update-reload" type="button">Jetzt aktualisieren</button>
+  <div id="update-toast" class="update-toast" role="status" aria-live="polite">
+    <span class="update-toast__text">Neue Version verfügbar</span>
+    <button type="button" id="btn-reload" class="update-toast__btn">Neu laden</button>
+    <button type="button" id="btn-dismiss-update" class="update-toast__close" aria-label="Hinweis schließen">✕</button>
   </div>
 
   <main>

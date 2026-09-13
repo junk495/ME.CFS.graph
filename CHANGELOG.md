@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.5.5 – 2026-09-12
+
+### Geändert
+
+* **Update-Hinweis unten:** Der „Neue Version verfügbar"-Hinweis erscheint jetzt als Toast am unteren Bildschirmrand (wie im Tracker) mit „Neu laden" und „✕"-Schließen.
+
+## v2.5.4 – 2026-09-12
+
+### Geändert
+
+* **Crash-Risiko verständlicher:** Erklärtexte und Kennzahlen-Tabelle sind jetzt klarer (Werte mit Einheit, Punktzahl am Ende, korrigierte PEM-Beschriftung, Spalten „Baseline → Ø 3 Tage").
+
 ## v2.5.3 – 2026-09-12
 
 ### Geändert

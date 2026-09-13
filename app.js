@@ -953,7 +953,7 @@
     else if (avgDelta >= 0.5) p1 = 1;
     points += p1;
     factors.push({
-      text: 'Symptom-Anstieg (Mittelwert gegenüber Basisniveau): ' + fmtNumber(avgDelta) + ' Punkte.',
+      text: 'Die Symptome sind im Schnitt um ' + fmtNumber(avgDelta) + ' gestiegen (0–4-Skala).',
       value: 'Symptom-Anstieg',
       points: p1
     });
@@ -968,7 +968,7 @@
     else if (zWorse >= 1 || bWorse >= 10) p2 = 1;
     points += p2;
     factors.push({
-      text: 'Abfall Zustand/Bell: Zustand ' + fmtNumber(zWorse) + ', Bell ' + fmtNumber(bWorse) + ' (positiv = Verschlechterung).',
+      text: 'Zustand um ' + fmtNumber(zWorse) + ' (von 10), Bell um ' + fmtNumber(bWorse) + ' (von 100) gefallen.',
       value: 'Zustand/Bell-Abfall',
       points: p2
     });
@@ -986,7 +986,7 @@
     else if (loadRecentMean >= 2.0) p3 = 1;
     points += p3;
     factors.push({
-      text: 'Aktuelle Belastung (körperlich/kognitiv/Reize): ' + fmtNumber(loadRecentMean) + ' von 4.',
+      text: 'Die Belastung liegt aktuell bei ' + fmtNumber(loadRecentMean) + ' von 4.',
       value: 'Hohe Belastung',
       points: p3
     });
@@ -1001,7 +1001,7 @@
     else if (pemHeute >= 1) p4 = 1;
     points += p4;
     factors.push({
-      text: 'Aktive PEM: PEM-Gesamtschwere letzte Tage ' + fmtNumber(pemHeuteStats.recentMean !== null ? pemHeuteStats.recentMean : 0) + ', PEM-Gesamtschwere ' + (activePem ? 'vorhanden' : 'nicht erfasst') + '.',
+      text: '„PEM heute" ' + fmtNumber(pemHeute) + ' (von 4), PEM-Gesamtschwere ' + (activePem ? 'vorhanden' : 'nicht erfasst') + '.',
       value: 'Aktive PEM',
       points: p4
     });
@@ -1013,7 +1013,7 @@
     if ((sq.recentMean !== null && sq.recentMean >= 3) || (sd.recentMean !== null && sd.recentMean < 6)) p5 = 1;
     points += p5;
     factors.push({
-      text: 'Schlaf: Qualität ' + fmtNumber(sq.recentMean !== null ? sq.recentMean : 0) + ' von 4, Dauer ' + fmtNumber(sd.recentMean !== null ? sd.recentMean : 0) + ' h.',
+      text: 'Qualität ' + fmtNumber(sq.recentMean !== null ? sq.recentMean : 0) + ' (von 4), Dauer ' + fmtNumber(sd.recentMean !== null ? sd.recentMean : 0) + ' h.',
       value: 'Schlaf',
       points: p5
     });
@@ -1074,7 +1074,7 @@
     factorList.innerHTML = '';
     risk.factors.forEach(function (f) {
       var li = document.createElement('li');
-      li.textContent = f.value + ' (' + f.points + ' Punkt' + (f.points === 1 ? '' : 'e') + '): ' + f.text;
+      li.textContent = f.value + ': ' + f.text + ' (' + f.points + ' Punkt' + (f.points === 1 ? '' : 'e') + ')';
       factorList.appendChild(li);
     });
 
@@ -1085,7 +1085,7 @@
       rows.push({ label: metricLabel(key), recent: s.recentMean, base: s.baseMedian, delta: s.delta, better: FIELDS_BY_KEY[key].dir === 'better' });
     });
 
-    var html = '<table class="risk-table"><thead><tr><th>Messwert</th><th class="num">Letzte 3 Tage</th><th class="num">Baseline</th><th class="num">Veränderung</th></tr></thead><tbody>';
+    var html = '<table class="risk-table"><thead><tr><th>Messwert</th><th class="num">Baseline</th><th class="num">Ø 3 Tage</th><th class="num">Veränderung</th></tr></thead><tbody>';
     rows.forEach(function (r) {
       var deltaTxt = '–';
       var cls = 'delta-flat';
@@ -1096,8 +1096,8 @@
         cls = Math.abs(r.delta) < 0.05 ? 'delta-flat' : (r.delta > 0 ? 'delta-up' : 'delta-down');
       }
       html += '<tr><td>' + r.label + '</td>' +
-        '<td class="num">' + (r.recent !== null ? fmtNumber(r.recent) : '–') + '</td>' +
         '<td class="num">' + (r.base !== null ? fmtNumber(r.base) : '–') + '</td>' +
+        '<td class="num">' + (r.recent !== null ? fmtNumber(r.recent) : '–') + '</td>' +
         '<td class="num ' + cls + '">' + deltaTxt + '</td></tr>';
     });
     html += '</tbody></table>';
@@ -1151,14 +1151,15 @@
     renderRisk();
 
     if ('serviceWorker' in navigator) {
-      var updateBanner = document.getElementById('update-banner');
-      var updateButton = document.getElementById('update-reload');
+      var updateToast = document.getElementById('update-toast');
+      var reloadButton = document.getElementById('btn-reload');
+      var dismissButton = document.getElementById('btn-dismiss-update');
       // Nur bei echten Updates anzeigen (nicht beim allerersten Install):
       var hadController = !!navigator.serviceWorker.controller;
 
       navigator.serviceWorker.addEventListener('message', function (event) {
         if (event.data && event.data.type === 'UPDATE_READY' && hadController) {
-          if (updateBanner) updateBanner.hidden = false;
+          if (updateToast) updateToast.classList.add('is-visible');
         }
       });
 
@@ -1166,9 +1167,15 @@
         // Offline-Cache ist optional; Fehler sind unkritisch.
       });
 
-      if (updateButton) {
-        updateButton.addEventListener('click', function () {
+      if (reloadButton) {
+        reloadButton.addEventListener('click', function () {
           window.location.reload();
+        });
+      }
+
+      if (dismissButton) {
+        dismissButton.addEventListener('click', function () {
+          if (updateToast) updateToast.classList.remove('is-visible');
         });
       }
     }
@@ -1179,7 +1186,9 @@
     var meta = document.querySelector('meta[name="app-version"]');
     var el = document.getElementById('app-version');
     if (meta && el) el.textContent = 'Version ' + meta.getAttribute('content');
-  })();  if (document.readyState === 'loading') {
+  })();
+
+  if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
