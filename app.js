@@ -130,20 +130,30 @@
       items: [
         { key: 'zustand_0_10' },
         { key: 'bell_0_100' },
-        { key: 'fatigue_0_4' },
+        { key: 'fatigue_0_4' }
+      ]
+    },
+    {
+      name: 'PEM',
+      items: [
         { key: 'pem_heute_0_4' },
         { key: 'pem_gesamt_0_4' }
       ]
     },
     {
-      name: 'Belastung & Aktivität',
+      name: 'Belastung & Pacing',
       items: [
         { key: 'belastung_koerperlich_0_4' },
         { key: 'belastung_kognitiv_0_4' },
         { key: 'belastung_reiz_0_4' },
         { key: 'pacing_0_4' },
         { key: 'arbeitsfaehigkeit_0_4' },
-        { key: 'teilhabe_0_4' },
+        { key: 'teilhabe_0_4' }
+      ]
+    },
+    {
+      name: 'Alltag',
+      items: [
         { key: 'liegezeit_h' },
         { key: 'hilfebedarf_min' },
         { key: 'schritte' }
@@ -585,6 +595,10 @@
       g.appendChild(row);
       container.appendChild(g);
     });
+
+    // Zusammenfassung (eingeklappte Zeile) auf die aktuelle Auswahl setzen
+    var summary = document.getElementById('chip-summary');
+    if (summary) summary.textContent = 'Messwert: ' + metricLabel(selectedMetric);
   }
 
   // ---------------------------------------------------------------------------

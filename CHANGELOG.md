@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.5.6 – 2026-09-12
+
+### Geändert
+
+* **Trend-Auswahl einklappbar:** Die Metrik-Auswahl ist jetzt hinter „Messwert: [aktuell]" einklappbar — der Graph ist sofort sichtbar, ohne zu scrollen.
+* **Gruppierung aufgeräumt:** Neue Gruppen „PEM", „Belastung & Pacing" und „Alltag" statt der alten Misch-Gruppen.
+
 ## v2.5.5 – 2026-09-12
 
 ### Geändert

@@ -435,3 +435,40 @@ li {
   color: var(--text-dim);
   text-align: center;
 }
+
+.chip-panel {
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+}
+
+.chip-panel summary {
+  list-style: none;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.chip-panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.chip-panel summary::after {
+  content: '▸';
+  margin-left: auto;
+  color: var(--text-dim);
+}
+
+.chip-panel[open] summary::after {
+  content: '▾';
+}
+
+.chip-panel .chip-groups {
+  padding: 4px 12px 12px;
+}
