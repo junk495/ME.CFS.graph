@@ -64,7 +64,7 @@ Die Dokumentation ist auf zwei Orte verteilt und muss inhaltlich stets zusammenp
 
 ## Haupt-Repository (`ME.CFS.graph`)
 
-- `README.md` — Kurzüberblick & Einstieg: Live-App-Link, Kurzvorstellung, Verweis aufs Wiki. NICHT hinein: ausführliche Bedienung, Feld-Details, medizinische Grundlagen (→ Wiki).
+- `README.md` — Kurzüberblick & Einstieg: Live-App-Link, Kurzvorstellung, Verweis aufs Wiki, Roadmap/geplante (noch nicht implementierte) Funktionen. NICHT hinein: ausführliche Bedienung, Feld-Details, medizinische Grundlagen, Beschreibung bereits implementierter Funktionen (→ Wiki).
 - `CHANGELOG.md` — Versionshistorie (je Version die Änderungen **an der App**: Funktionen, Ansichten, UI, Verhalten). NICHT hinein: aktuelle Feature-Beschreibung (→ Wiki), Bedienung (→ Wiki), Änderungen an Dokumentation/Lizenz.
 - `LICENSE.md` — Lizenz (CC BY-NC-SA 4.0) + medizinischer Haftungsausschluss.
 
@@ -75,6 +75,7 @@ Die Dokumentation ist auf zwei Orte verteilt und muss inhaltlich stets zusammenp
 - `Erlaeuterungen.md` — Gemeinsame fachliche Grundlagen: ME/CFS, PEM, Skalen, Risiko-Regelwerk, Quellen.
 - `Bedienungsanleitung-Graph.md`, `FAQ-Graph.md`, `Dev-Guide-Graph.md` — Graph-spezifische Seiten.
 - `Bedienungsanleitung-Tracker.md`, `FAQ-Tracker.md`, `Dev-Guide-Tracker.md` — Tracker-spezifische Seiten.
+- Das Wiki dokumentiert ausschließlich **bereits implementierte** Funktionen/Verhalten der Apps. Geplante (noch nicht umgesetzte) Funktionen stehen in der Roadmap der jeweiligen `README.md` (Repo).
 
 ## Pflege-Regeln (KI-Direktiven)
 
