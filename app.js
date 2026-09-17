@@ -1,6 +1,14 @@
 (function () {
   'use strict';
 
+  // Reine Hilfsfunktionen (ausgelagert nach core.js, damit sie testbar sind)
+  var norm = MECFS_core.norm;
+  var parseNumber = MECFS_core.parseNumber;
+  var median = MECFS_core.median;
+  var mean = MECFS_core.mean;
+  var parseDate = MECFS_core.parseDate;
+  var parseCSVLine = MECFS_core.parseCSVLine;
+
   // ---------------------------------------------------------------------------
   // Konstanten & Feld-Definitionen
   // ---------------------------------------------------------------------------
@@ -26,6 +34,16 @@
     ['teilhabe_0_4', 'Teilhabe (0-4)', 'Teilhabe', '0_4', 'worse'],
     ['schlafdauer_h', 'Schlafdauer (h)', 'Schlafdauer', 'hours', 'neutral'],
     ['schritte', 'Schritte', 'Schritte', 'steps', 'neutral'],
+    ['puls_ruhe', 'Ruhepuls (bpm)', 'Ruhepuls', 'bpm', 'worse'],
+    ['puls_avg', 'Puls Mittel (bpm)', 'Puls Durchschnitt', 'bpm', 'neutral'],
+    ['puls_max', 'Puls Maximum (bpm)', 'Puls Maximum', 'bpm', 'worse'],
+    ['hrv', 'HRV (ms)', 'HRV', 'ms', 'better'],
+    ['spo2', 'SpO2 (%)', 'SpO2', 'percent', 'better'],
+    ['atemfrequenz', 'Atemfrequenz (1/min)', 'Atemfrequenz', 'rate', 'neutral'],
+    ['temperatur', 'Temperatur (°C)', 'Körpertemperatur', 'celsius', 'neutral'],
+    ['blutdruck_sys', 'Blutdruck systolisch (mmHg)', 'Blutdruck systolisch', 'mmhg', 'neutral'],
+    ['blutdruck_dia', 'Blutdruck diastolisch (mmHg)', 'Blutdruck diastolisch', 'mmhg', 'neutral'],
+    ['gewicht', 'Gewicht (kg)', 'Gewicht', 'kg', 'neutral'],
     ['kontext', 'Kontext', 'Kontext', 'text', 'neutral'],
     ['notiz', 'Notiz', 'Notiz', 'text', 'neutral'],
     ['pem_belastungsdatum', 'Belastungsdatum', 'Belastungsdatum', 'date', 'neutral'],
@@ -122,23 +140,32 @@
       items: [
         { key: 'zustand_0_10' },
         { key: 'bell_0_100' },
-        { key: 'fatigue_0_4' },
+        { key: 'fatigue_0_4' }
+      ]
+    },
+    {
+      name: 'PEM',
+      items: [
         { key: 'pem_heute_0_4' },
         { key: 'pem_gesamt_0_4' }
       ]
     },
     {
-      name: 'Belastung & Aktivität',
+      name: 'Belastung & Pacing',
       items: [
         { key: 'belastung_koerperlich_0_4' },
         { key: 'belastung_kognitiv_0_4' },
         { key: 'belastung_reiz_0_4' },
         { key: 'pacing_0_4' },
         { key: 'arbeitsfaehigkeit_0_4' },
-        { key: 'teilhabe_0_4' },
+        { key: 'teilhabe_0_4' }
+      ]
+    },
+    {
+      name: 'Alltag',
+      items: [
         { key: 'liegezeit_h' },
-        { key: 'hilfebedarf_min' },
-        { key: 'schritte' }
+        { key: 'hilfebedarf_min' }
       ]
     },
     {
@@ -149,6 +176,22 @@
         { key: 'schlaf_durchschlaf' },
         { key: 'schlaf_rhythmus' },
         { key: 'schlaf_hypersomnie' }
+      ]
+    },
+    {
+      name: 'Messwerte',
+      items: [
+        { key: 'schritte' },
+        { key: 'puls_ruhe' },
+        { key: 'puls_avg' },
+        { key: 'puls_max' },
+        { key: 'hrv' },
+        { key: 'spo2' },
+        { key: 'atemfrequenz' },
+        { key: 'temperatur' },
+        { key: 'blutdruck_sys' },
+        { key: 'blutdruck_dia' },
+        { key: 'gewicht' }
       ]
     },
     {
@@ -171,53 +214,14 @@
   var records = [];
   var selectedMetric = 'zustand_0_10';
   var baselineOn = true;
-
-  // ---------------------------------------------------------------------------
-  // Hilfsfunktionen
-  // ---------------------------------------------------------------------------
-
-  function norm(s) {
-    return String(s).replace(/\uFEFF/g, '').trim();
-  }
-
-  function parseNumber(raw) {
-    if (raw === null || raw === undefined) return null;
-    if (typeof raw === 'number') return raw;
-    var s = String(raw).trim();
-    if (s === '') return null;
-    if (s.indexOf(',') !== -1 && s.indexOf('.') === -1) {
-      s = s.replace(/\./g, '').replace(',', '.');
-    } else if (s.indexOf(',') !== -1 && s.indexOf('.') !== -1) {
-      // z. B. "1.234,56" -> "1234.56"
-      s = s.replace(/\./g, '').replace(',', '.');
-    }
-    var n = Number(s);
-    return isNaN(n) ? null : n;
-  }
-
-  function median(arr) {
-    if (!arr || arr.length === 0) return null;
-    var sorted = arr.slice().sort(function (a, b) { return a - b; });
-    var mid = Math.floor(sorted.length / 2);
-    if (sorted.length % 2 === 0) return (sorted[mid - 1] + sorted[mid]) / 2;
-    return sorted[mid];
-  }
-
-  function mean(arr) {
-    if (!arr || arr.length === 0) return null;
-    var sum = 0;
-    for (var i = 0; i < arr.length; i++) sum += arr[i];
-    return sum / arr.length;
-  }
-
-  function parseDate(s) {
-    if (!s) return null;
-    var str = String(s).trim();
-    var m = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime();
-    var d = new Date(str);
-    return isNaN(d.getTime()) ? null : d.getTime();
-  }
+  var selectedRange = 'all';
+  var RANGE_OPTIONS = [
+    { value: '7', label: '7 Tage' },
+    { value: '14', label: '14 Tage' },
+    { value: '30', label: '30 Tage' },
+    { value: '90', label: '90 Tage' },
+    { value: 'all', label: 'Alle' }
+  ];
 
   function fmtShort(ts) {
     return new Date(ts).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
@@ -233,6 +237,23 @@
       if (typeof record[k] === 'number') vals.push(record[k]);
     });
     return vals.length ? mean(vals) : null;
+  }
+
+  // Akuter Crash: pem_ausloeser beginnt mit dem Zeitstempel "[HH:MM] " (vom ⚡-Button).
+  function isAcuteCrash(rec) {
+    var s = rec.pem_ausloeser;
+    return typeof s === 'string' && s.charAt(0) === '[';
+  }
+
+  function visibleRecords() {
+    if (selectedRange === 'all') return records;
+    var days = parseInt(selectedRange, 10);
+    return records.slice(Math.max(0, records.length - days));
+  }
+
+  function rangeLabel() {
+    if (selectedRange === 'all') return 'alle Tage';
+    return 'letzte ' + selectedRange + ' Tage';
   }
 
   // Liefert den Messwert eines Datensatzes für eine Auswahl (Feld-Key oder 'domain:key')
@@ -262,17 +283,35 @@
   // y-Skala für das Trend-Diagramm
   function yRangeFor(metric, values) {
     var type = metric.indexOf('domain:') === 0 ? '0_4' : FIELDS_BY_KEY[metric].type;
-    var fixedMax = null, fixedMin = 0;
-    if (type === '0_4') fixedMax = 4;
-    else if (type === '0_10') fixedMax = 10;
-    else if (type === '0_100') fixedMax = 100;
 
     var nums = values.filter(function (v) { return typeof v === 'number'; });
     var dataMax = nums.length ? Math.max.apply(null, nums) : 1;
     var dataMin = nums.length ? Math.min.apply(null, nums) : 0;
 
-    var min = Math.min(fixedMin, dataMin);
-    var max = fixedMax !== null ? Math.max(fixedMax, dataMax) : dataMax * 1.15;
+    var min, max;
+    if (type === '0_4' || type === '0_10' || type === '0_100') {
+      var fixed = type === '0_4' ? 4 : (type === '0_10' ? 10 : 100);
+      min = Math.min(0, dataMin);
+      max = Math.max(fixed, dataMax);
+    } else if (type === 'percent') {
+      // SpO₂: sinnvoller Bereich um 95–100 %, bei Ausreißern erweitert
+      min = Math.min(85, dataMin);
+      max = Math.max(100, dataMax);
+    } else if (type === 'celsius') {
+      // Körpertemperatur: um die Daten zentriert, nicht ab 0
+      min = Math.min(34, dataMin - 1);
+      max = dataMax + 1;
+    } else if (type === 'kg') {
+      min = Math.max(0, dataMin - 2);
+      max = dataMax + 2;
+    } else if (type === 'mmhg') {
+      min = Math.max(0, dataMin - 10);
+      max = dataMax + 10;
+    } else {
+      min = 0;
+      max = dataMax * 1.15;
+    }
+
     if (max <= min) max = min + 1;
     return { min: min, max: max };
   }
@@ -300,27 +339,6 @@
   // ---------------------------------------------------------------------------
   // CSV/JSON-Parser
   // ---------------------------------------------------------------------------
-
-  function parseCSVLine(line) {
-    var out = [];
-    var cur = '';
-    var inQuotes = false;
-    for (var i = 0; i < line.length; i++) {
-      var ch = line[i];
-      if (inQuotes) {
-        if (ch === '"') {
-          if (line[i + 1] === '"') { cur += '"'; i++; }
-          else inQuotes = false;
-        } else cur += ch;
-      } else {
-        if (ch === '"') inQuotes = true;
-        else if (ch === ';') { out.push(cur); cur = ''; }
-        else cur += ch;
-      }
-    }
-    out.push(cur);
-    return out;
-  }
 
   function recordsFromCSV(text) {
     text = text.replace(/\uFEFF/g, '');
@@ -391,6 +409,7 @@
     records = normalizeRecords(list);
     updateImportStatus();
     renderTrendChips();
+    renderRangeChips();
     renderTrend();
     renderHeatmap();
     renderRisk();
@@ -437,7 +456,7 @@
 
   // Lädt die Daten direkt aus dem localStorage des ME/CFS-Symptom-Trackers.
   // Voraussetzung: beide Apps laufen auf derselben Origin (junk495.github.io).
-  function loadFromTracker() {
+  function loadFromTracker(silent) {
     var prefix = 'mecfs_tagescheck_';
     var list = [];
     try {
@@ -456,8 +475,10 @@
     }
 
     if (!list.length) {
-      var status = document.getElementById('import-status');
-      if (status) status.textContent = 'Keine Tracker-Daten in diesem Browser gefunden.';
+      if (!silent) {
+        var status = document.getElementById('import-status');
+        if (status) status.textContent = 'Keine Tracker-Daten in diesem Browser gefunden.';
+      }
       return;
     }
 
@@ -525,9 +546,19 @@
         teilhabe_0_4: crash ? 3 : 2,
         schlafdauer_h: crash ? 5 : 7,
         schritte: crash ? 300 : 1500 + Math.round(rand() * 4000),
+        puls_ruhe: crash ? 72 + Math.round(rand() * 2) : (postCrash ? 69 + Math.round(rand() * 2) : 58 + Math.round(rand() * 4)),
+        puls_avg: crash ? 86 + Math.round(rand() * 6) : 73 + Math.round(rand() * 6),
+        puls_max: crash ? 135 + Math.round(rand() * 10) : 113 + Math.round(rand() * 12),
+        hrv: crash ? 30 + Math.round(rand() * 4) : (postCrash ? 38 + Math.round(rand() * 4) : 47 + Math.round(rand() * 6)),
+        spo2: 97 + Math.round(rand() * 2),
+        atemfrequenz: 12 + Math.round(rand() * 4),
+        temperatur: 36.5 + Math.round(rand() * 4) / 10,
+        blutdruck_sys: 118 + Math.round(rand() * 8),
+        blutdruck_dia: 77 + Math.round(rand() * 6),
+        gewicht: 72 + Math.round(rand() * 20) / 10,
 
         pem_belastungsdatum: crash ? iso : null,
-        pem_ausloeser: crash ? 'Überanstrengung' : null,
+        pem_ausloeser: crash ? '[13:45] Überanstrengung' : null,
         pem_gesamt_0_4: crash ? 3 : null,
         pem_dauer_h: crash ? 24 + Math.round(rand() * 48) : null,
 
@@ -598,7 +629,7 @@
     document.querySelectorAll('.view').forEach(function (sec) {
       sec.hidden = (sec.id !== 'view-' + name);
     });
-    document.querySelectorAll('.nav-button').forEach(function (btn) {
+    document.querySelectorAll('.tab').forEach(function (btn) {
       btn.classList.toggle('is-active', btn.dataset.view === name);
     });
     if (name === 'trend') renderTrend();
@@ -643,6 +674,29 @@
       g.appendChild(row);
       container.appendChild(g);
     });
+
+    // Zusammenfassung (eingeklappte Zeile) auf die aktuelle Auswahl setzen
+    var summary = document.getElementById('chip-summary');
+    if (summary) summary.textContent = 'Wert: ' + metricLabel(selectedMetric);
+  }
+
+  function renderRangeChips() {
+    var container = document.getElementById('range-chips');
+    if (!container) return;
+    container.innerHTML = '';
+    RANGE_OPTIONS.forEach(function (opt) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip' + (selectedRange === opt.value ? ' is-active' : '');
+      b.textContent = opt.label;
+      b.dataset.range = opt.value;
+      b.addEventListener('click', function () {
+        selectedRange = opt.value;
+        renderRangeChips();
+        renderTrend();
+      });
+      container.appendChild(b);
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -681,8 +735,8 @@
       empty.ctx.fillStyle = '#a7adba';
       empty.ctx.font = '14px system-ui, sans-serif';
       empty.ctx.textAlign = 'center';
-      empty.ctx.fillText('Keine Daten geladen', empty.width / 2, empty.height / 2);
-      readout.textContent = '';
+      empty.ctx.fillText('Noch keine Daten geladen', empty.width / 2, empty.height / 2);
+      readout.textContent = 'Daten oben über „Tracker", „CSV/JSON" oder „Beispiel" laden.';
       return;
     }
 
@@ -690,7 +744,9 @@
     var ctx = d.ctx, W = d.width, H = d.height;
     var padL = 42, padR = 12, padT = 16, padB = 40;
 
-    var values = records.map(function (r) { return getMetricValue(r, selectedMetric); });
+    var viewRecords = visibleRecords();
+    var allValues = records.map(function (r) { return getMetricValue(r, selectedMetric); });
+    var values = viewRecords.map(function (r) { return getMetricValue(r, selectedMetric); });
     var range = yRangeFor(selectedMetric, values);
 
     var plotW = W - padL - padR;
@@ -698,8 +754,8 @@
     var ticks = makeTicks(range.min, range.max);
 
     function xForDate(ts) {
-      var first = records[0].dateTs;
-      var last = records[records.length - 1].dateTs;
+      var first = viewRecords[0].dateTs;
+      var last = viewRecords[viewRecords.length - 1].dateTs;
       var span = last - first || 86400000;
       return padL + ((ts - first) / span) * plotW;
     }
@@ -730,19 +786,19 @@
 
     // X-Achsen-Beschriftung (Datumsangaben)
     var labelCount = Math.max(2, Math.min(6, Math.floor(plotW / 80)));
-    var step = Math.max(1, Math.ceil(records.length / labelCount));
+    var step = Math.max(1, Math.ceil(viewRecords.length / labelCount));
     ctx.textAlign = 'center';
-    for (var i = 0; i < records.length; i += step) {
-      var x = xForDate(records[i].dateTs);
-      ctx.fillText(fmtShort(records[i].dateTs), x, H - padB + 16);
+    for (var i = 0; i < viewRecords.length; i += step) {
+      var x = xForDate(viewRecords[i].dateTs);
+      ctx.fillText(fmtShort(viewRecords[i].dateTs), x, H - padB + 16);
     }
     // letzten Tag immer beschriften, wenn nicht bereits enthalten
-    var lastX = xForDate(records[records.length - 1].dateTs);
-    ctx.fillText(fmtShort(records[records.length - 1].dateTs), lastX, H - padB + 16);
+    var lastX = xForDate(viewRecords[viewRecords.length - 1].dateTs);
+    ctx.fillText(fmtShort(viewRecords[viewRecords.length - 1].dateTs), lastX, H - padB + 16);
 
     // Baseline (Median über alle vorhandenen Werte)
     if (baselineOn) {
-      var baseVals = values.filter(function (v) { return typeof v === 'number'; });
+      var baseVals = allValues.filter(function (v) { return typeof v === 'number'; });
       var med = median(baseVals);
       if (med !== null && baseVals.length >= 2) {
         var by = yFor(med);
@@ -768,6 +824,19 @@
     ctx.lineTo(W - padR, padT + plotH);
     ctx.stroke();
 
+    // Akute Crash-Marker (pem_ausloeser beginnt mit "[HH:MM]")
+    for (var ci = 0; ci < viewRecords.length; ci++) {
+      if (!isAcuteCrash(viewRecords[ci])) continue;
+      var cx = xForDate(viewRecords[ci].dateTs);
+      ctx.fillStyle = '#e08a5a';
+      ctx.beginPath();
+      ctx.moveTo(cx, padT + plotH);
+      ctx.lineTo(cx - 3, padT + plotH + 7);
+      ctx.lineTo(cx + 3, padT + plotH + 7);
+      ctx.closePath();
+      ctx.fill();
+    }
+
     // Daten-Linie mit Lücken
     var good = metricIsGood(selectedMetric);
     var lineColor = '#7fb3d5';
@@ -779,13 +848,13 @@
 
     var started = false;
     ctx.beginPath();
-    for (var j = 0; j < records.length; j++) {
+    for (var j = 0; j < viewRecords.length; j++) {
       var val = values[j];
       if (typeof val !== 'number') {
         started = false;
         continue;
       }
-      var px = xForDate(records[j].dateTs);
+      var px = xForDate(viewRecords[j].dateTs);
       var py = yFor(val);
       if (!started) { ctx.moveTo(px, py); started = true; }
       else ctx.lineTo(px, py);
@@ -794,23 +863,23 @@
 
     // Punkte
     ctx.fillStyle = lineColor;
-    for (var k = 0; k < records.length; k++) {
+    for (var k = 0; k < viewRecords.length; k++) {
       if (typeof values[k] !== 'number') continue;
       ctx.beginPath();
-      ctx.arc(xForDate(records[k].dateTs), yFor(values[k]), 3.5, 0, Math.PI * 2);
+      ctx.arc(xForDate(viewRecords[k].dateTs), yFor(values[k]), 3.5, 0, Math.PI * 2);
       ctx.fill();
     }
 
     // Pointer-/Klick-Auswertung speichern
-    canvas._trendData = { records: records, values: values, xForDate: xForDate, padL: padL, padR: padR, good: good };
+    canvas._trendData = { records: viewRecords, values: values, xForDate: xForDate, padL: padL, padR: padR, good: good };
 
     // Standard-Ausgabe: letzter Wert
     var lastVal = null, lastRec = null;
-    for (var m = records.length - 1; m >= 0; m--) {
-      if (typeof values[m] === 'number') { lastVal = values[m]; lastRec = records[m]; break; }
+    for (var m = viewRecords.length - 1; m >= 0; m--) {
+      if (typeof values[m] === 'number') { lastVal = values[m]; lastRec = viewRecords[m]; break; }
     }
     if (lastRec) {
-      readout.textContent = 'Zuletzt: ' + fmtFull(lastRec.dateTs) + ' · ' + metricLabel(selectedMetric) + ' ' + fmtNumber(lastVal);
+      readout.textContent = 'Zeitraum: ' + rangeLabel() + ' · Zuletzt: ' + fmtFull(lastRec.dateTs) + ' · ' + metricLabel(selectedMetric) + ' ' + fmtNumber(lastVal);
     } else {
       readout.textContent = 'Keine Werte für diese Auswahl vorhanden.';
     }
@@ -832,8 +901,10 @@
     }
     if (best < 0) return;
     var val = d.values[best];
-    var txt = fmtFull(d.records[best].dateTs) + ' · ' + metricLabel(selectedMetric) + ': ';
+    var rec = d.records[best];
+    var txt = fmtFull(rec.dateTs) + ' · ' + metricLabel(selectedMetric) + ': ';
     txt += (typeof val === 'number') ? fmtNumber(val) : 'keine Angabe';
+    if (isAcuteCrash(rec)) txt += ' · Crash';
     readout.textContent = txt;
   }
 
@@ -850,8 +921,8 @@
       empty.ctx.fillStyle = '#a7adba';
       empty.ctx.font = '14px system-ui, sans-serif';
       empty.ctx.textAlign = 'center';
-      empty.ctx.fillText('Keine Daten geladen', empty.width / 2, empty.height / 2);
-      readout.textContent = '';
+      empty.ctx.fillText('Noch keine Daten geladen', empty.width / 2, empty.height / 2);
+      readout.textContent = 'Daten oben über „Tracker", „CSV/JSON" oder „Beispiel" laden.';
       return;
     }
 
@@ -993,6 +1064,12 @@
     return { recentMean: rm, baseMedian: bm, delta: delta, recentN: recent.length, baseN: base.length };
   }
 
+  // Formatiert ein Delta: positiv = upVerb, negativ = downVerb, ~0 = unverändert
+  function deltaText(v, upVerb, downVerb) {
+    if (v === null || Math.abs(v) < 0.05) return 'unverändert';
+    return v > 0 ? ('um ' + fmtNumber(v) + ' ' + upVerb) : ('um ' + fmtNumber(-v) + ' ' + downVerb);
+  }
+
   function computeRisk() {
     if (records.length < 3) return null;
 
@@ -1011,7 +1088,7 @@
     else if (avgDelta >= 0.5) p1 = 1;
     points += p1;
     factors.push({
-      text: 'Symptom-Anstieg (Mittelwert gegenüber Basisniveau): ' + fmtNumber(avgDelta) + ' Punkte.',
+      text: 'Die Symptome sind im Schnitt ' + deltaText(avgDelta, 'gestiegen', 'gesunken') + ' (0–4-Skala).',
       value: 'Symptom-Anstieg',
       points: p1
     });
@@ -1026,7 +1103,7 @@
     else if (zWorse >= 1 || bWorse >= 10) p2 = 1;
     points += p2;
     factors.push({
-      text: 'Abfall Zustand/Bell: Zustand ' + fmtNumber(zWorse) + ', Bell ' + fmtNumber(bWorse) + ' (positiv = Verschlechterung).',
+      text: 'Zustand ' + deltaText(zWorse, 'gefallen', 'gestiegen') + ' (von 10), Bell ' + deltaText(bWorse, 'gefallen', 'gestiegen') + ' (von 100).',
       value: 'Zustand/Bell-Abfall',
       points: p2
     });
@@ -1044,22 +1121,20 @@
     else if (loadRecentMean >= 2.0) p3 = 1;
     points += p3;
     factors.push({
-      text: 'Aktuelle Belastung (körperlich/kognitiv/Reize): ' + fmtNumber(loadRecentMean) + ' von 4.',
+      text: 'Die Belastung liegt aktuell bei ' + fmtNumber(loadRecentMean) + ' von 4.',
       value: 'Hohe Belastung',
       points: p3
     });
 
-    // Faktor 4: Aktive PEM
-    var pemStats = metricStats('pem_gesamt_0_4');
+    // Faktor 4: Aktive PEM (nur der täglich erfasste Wert „PEM heute")
     var pemHeuteStats = metricStats('pem_heute_0_4');
-    var activePem = (pemStats.recentMean !== null && pemStats.recentMean >= 1);
     var pemHeute = pemHeuteStats.recentMean !== null ? pemHeuteStats.recentMean : 0;
     var p4 = 0;
-    if (activePem || pemHeute >= 2) p4 = 2;
+    if (pemHeute >= 2) p4 = 2;
     else if (pemHeute >= 1) p4 = 1;
     points += p4;
     factors.push({
-      text: 'Aktive PEM: PEM-Gesamtschwere letzte Tage ' + fmtNumber(pemHeuteStats.recentMean !== null ? pemHeuteStats.recentMean : 0) + ', PEM-Gesamtschwere ' + (activePem ? 'vorhanden' : 'nicht erfasst') + '.',
+      text: 'PEM heute ' + fmtNumber(pemHeute) + ' (von 4).',
       value: 'Aktive PEM',
       points: p4
     });
@@ -1071,9 +1146,32 @@
     if ((sq.recentMean !== null && sq.recentMean >= 3) || (sd.recentMean !== null && sd.recentMean < 6)) p5 = 1;
     points += p5;
     factors.push({
-      text: 'Schlaf: Qualität ' + fmtNumber(sq.recentMean !== null ? sq.recentMean : 0) + ' von 4, Dauer ' + fmtNumber(sd.recentMean !== null ? sd.recentMean : 0) + ' h.',
+      text: 'Qualität ' + fmtNumber(sq.recentMean !== null ? sq.recentMean : 0) + ' (von 4), Dauer ' + fmtNumber(sd.recentMean !== null ? sd.recentMean : 0) + ' h.',
       value: 'Schlaf',
       points: p5
+    });
+
+    // Faktor 6: Objektive Überlastung (Ruhepuls-Anstieg oder HRV-Abfall)
+    var pr = metricStats('puls_ruhe');
+    var hv = metricStats('hrv');
+    var p6 = 0;
+    var prUp = (pr.recentMean !== null && pr.baseMedian !== null) ? (pr.recentMean - pr.baseMedian) : null;
+    var hvDrop = (hv.recentMean !== null && hv.baseMedian !== null && hv.baseMedian > 0) ? ((hv.baseMedian - hv.recentMean) / hv.baseMedian) : null;
+    var objText = 'Keine ausreichenden Messwerte (Ruhepuls/HRV).';
+    if (prUp !== null && prUp >= 5) {
+      p6 = 1;
+      objText = 'Ruhepuls Ø 3 Tage ' + fmtNumber(pr.recentMean) + ' bpm (Baseline ' + fmtNumber(pr.baseMedian) + ' bpm) — erhöht.';
+    } else if (hvDrop !== null && hvDrop >= 0.25) {
+      p6 = 1;
+      objText = 'HRV Ø 3 Tage ' + fmtNumber(hv.recentMean) + ' ms (Baseline ' + fmtNumber(hv.baseMedian) + ' ms) — reduziert.';
+    } else if (pr.recentMean !== null || hv.recentMean !== null) {
+      objText = 'Ruhepuls und HRV im persönlichen Bereich.';
+    }
+    points += p6;
+    factors.push({
+      text: objText,
+      value: 'Objektive Überlastung',
+      points: p6
     });
 
     var level, label, summary;
@@ -1126,36 +1224,44 @@
     gauge.className = 'risk-gauge risk-' + risk.level;
     gauge.innerHTML = '<div class="risk-label">Einschätzung</div>' +
       '<div class="risk-level">' + risk.label + '</div>' +
-      '<div class="risk-label">' + risk.points + ' Warnpunkte (max. 9)</div>';
+      '<div class="risk-label">' + risk.points + ' Warnpunkte (max. 10)</div>';
     summary.textContent = risk.summary;
 
     factorList.innerHTML = '';
     risk.factors.forEach(function (f) {
       var li = document.createElement('li');
-      li.textContent = f.value + ' (' + f.points + ' Punkt' + (f.points === 1 ? '' : 'e') + '): ' + f.text;
+      li.textContent = f.value + ': ' + f.text + ' (' + f.points + ' Punkt' + (f.points === 1 ? '' : 'e') + ')';
       factorList.appendChild(li);
     });
 
     // Kennzahlen-Tabelle
     var rows = [];
-    ['zustand_0_10', 'bell_0_100', 'fatigue_0_4', 'pem_heute_0_4', 'belastung_koerperlich_0_4', 'belastung_kognitiv_0_4', 'belastung_reiz_0_4', 'schlafqualitaet_0_4', 'liegezeit_h', 'schritte'].forEach(function (key) {
+    ['zustand_0_10', 'bell_0_100', 'fatigue_0_4', 'pem_heute_0_4', 'belastung_koerperlich_0_4', 'belastung_kognitiv_0_4', 'belastung_reiz_0_4', 'schlafqualitaet_0_4', 'liegezeit_h', 'schritte', 'puls_ruhe', 'hrv'].forEach(function (key) {
       var s = metricStats(key);
-      rows.push({ label: metricLabel(key), recent: s.recentMean, base: s.baseMedian, delta: s.delta, better: FIELDS_BY_KEY[key].dir === 'better' });
+      rows.push({ label: metricLabel(key), recent: s.recentMean, base: s.baseMedian, dir: FIELDS_BY_KEY[key].dir });
     });
 
-    var html = '<table class="risk-table"><thead><tr><th>Messwert</th><th class="num">Letzte 3 Tage</th><th class="num">Baseline</th><th class="num">Veränderung</th></tr></thead><tbody>';
+    var html = '<table class="risk-table"><thead><tr><th>Wert</th><th class="num">Baseline</th><th class="num">Ø 3 Tage</th><th class="num">Veränderung</th></tr></thead><tbody>';
     rows.forEach(function (r) {
       var deltaTxt = '–';
       var cls = 'delta-flat';
-      if (r.delta !== null) {
-        var sign = r.delta > 0.05 ? '↑' : (r.delta < -0.05 ? '↓' : '→');
-        deltaTxt = sign + ' ' + fmtNumber(Math.abs(r.delta));
-        // Für "höher ist besser"-Metriken ist Verschlechterung negativ dargestellt
-        cls = Math.abs(r.delta) < 0.05 ? 'delta-flat' : (r.delta > 0 ? 'delta-up' : 'delta-down');
+      if (r.recent !== null && r.base !== null) {
+        var numDelta = r.recent - r.base;
+        var sign = numDelta > 0.05 ? '↑' : (numDelta < -0.05 ? '↓' : '→');
+        deltaTxt = sign + ' ' + fmtNumber(Math.abs(numDelta));
+        if (Math.abs(numDelta) < 0.05) {
+          cls = 'delta-flat';
+        } else if (r.dir === 'better') {
+          cls = numDelta < 0 ? 'delta-up' : 'delta-down';
+        } else if (r.dir === 'worse') {
+          cls = numDelta > 0 ? 'delta-up' : 'delta-down';
+        } else {
+          cls = 'delta-flat';
+        }
       }
       html += '<tr><td>' + r.label + '</td>' +
-        '<td class="num">' + (r.recent !== null ? fmtNumber(r.recent) : '–') + '</td>' +
         '<td class="num">' + (r.base !== null ? fmtNumber(r.base) : '–') + '</td>' +
+        '<td class="num">' + (r.recent !== null ? fmtNumber(r.recent) : '–') + '</td>' +
         '<td class="num ' + cls + '">' + deltaTxt + '</td></tr>';
     });
     html += '</tbody></table>';
@@ -1166,8 +1272,15 @@
   // Initialisierung
   // ---------------------------------------------------------------------------
 
+  function applyFontPreference() {
+    var on = localStorage.getItem('mecfs_graph_large_font') === '1';
+    document.documentElement.classList.toggle('font-large', on);
+    var t = document.getElementById('font-toggle');
+    if (t) t.checked = on;
+  }
+
   function init() {
-    document.querySelectorAll('.nav-button').forEach(function (btn) {
+    document.querySelectorAll('.tab').forEach(function (btn) {
       btn.addEventListener('click', function () { switchView(btn.dataset.view); });
     });
 
@@ -1180,12 +1293,27 @@
       loadRecords(buildDemo());
     });
 
-    document.getElementById('tracker-button').addEventListener('click', loadFromTracker);
+    document.getElementById('tracker-button').addEventListener('click', function () {
+      loadFromTracker();
+    });
+
+    // Beim Öffnen direkt vorhandene Tracker-Daten laden (gleicher Browser)
+    loadFromTracker(true);
 
     document.getElementById('baseline-toggle').addEventListener('change', function (e) {
       baselineOn = e.target.checked;
       renderTrend();
     });
+
+    applyFontPreference();
+    var fontToggle = document.getElementById('font-toggle');
+    if (fontToggle) {
+      fontToggle.addEventListener('change', function () {
+        if (fontToggle.checked) localStorage.setItem('mecfs_graph_large_font', '1');
+        else localStorage.removeItem('mecfs_graph_large_font');
+        document.documentElement.classList.toggle('font-large', fontToggle.checked);
+      });
+    }
 
     window.addEventListener('resize', function () {
       var active = document.querySelector('.view:not([hidden])');
@@ -1199,46 +1327,48 @@
     document.getElementById('heatmap-canvas').addEventListener('click', heatmapPointer);
 
     renderTrendChips();
+    renderRangeChips();
     renderTrend();
     renderHeatmap();
     renderRisk();
 
     if ('serviceWorker' in navigator) {
-      var updateBanner = document.getElementById('update-banner');
-      var updateButton = document.getElementById('update-reload');
-      var waitingWorker = null;
-      var reloading = false;
+      var updateToast = document.getElementById('update-toast');
+      var reloadButton = document.getElementById('btn-reload');
+      var dismissButton = document.getElementById('btn-dismiss-update');
+      // Nur bei echten Updates anzeigen (nicht beim allerersten Install):
+      var hadController = !!navigator.serviceWorker.controller;
 
-      navigator.serviceWorker.register('./sw.js').then(function (registration) {
-        registration.addEventListener('updatefound', function () {
-          var newWorker = registration.installing;
-          if (!newWorker) return;
-          newWorker.addEventListener('statechange', function () {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              waitingWorker = newWorker;
-              if (updateBanner) updateBanner.hidden = false;
-            }
-          });
-        });
-      }).catch(function () {
+      navigator.serviceWorker.addEventListener('message', function (event) {
+        if (event.data && event.data.type === 'UPDATE_READY' && hadController) {
+          if (updateToast) updateToast.classList.add('is-visible');
+        }
+      });
+
+      navigator.serviceWorker.register('./sw.js').catch(function () {
         // Offline-Cache ist optional; Fehler sind unkritisch.
       });
 
-      navigator.serviceWorker.addEventListener('controllerchange', function () {
-        if (reloading) return;
-        reloading = true;
-        window.location.reload();
-      });
+      if (reloadButton) {
+        reloadButton.addEventListener('click', function () {
+          window.location.reload();
+        });
+      }
 
-      if (updateButton) {
-        updateButton.addEventListener('click', function () {
-          if (waitingWorker) {
-            waitingWorker.postMessage({ type: 'SKIP_WAITING' });
-          }
+      if (dismissButton) {
+        dismissButton.addEventListener('click', function () {
+          if (updateToast) updateToast.classList.remove('is-visible');
         });
       }
     }
   }
+
+  // Version anzeigen (aus Meta-Tag <meta name="app-version">)
+  (function () {
+    var meta = document.querySelector('meta[name="app-version"]');
+    var el = document.getElementById('app-version');
+    if (meta && el) el.textContent = 'Version ' + meta.getAttribute('content');
+  })();
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

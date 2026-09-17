@@ -4,9 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#16181d">
+  <meta name="app-version" content="v2.8.0">
   <meta name="description" content="ME.CFS.graph — lokale, grafische Auswertung der ME/CFS-Symptom-Tracker-Daten (CSV/JSON) mit Verlaufs- und Crash-Risiko-Orientierung.">
   <title>ME.CFS.graph</title>
   <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,10 +18,10 @@
     <p class="subtitle">Verlauf & Crash-Risiko-Orientierung</p>
 
     <div class="import-area" id="import-area">
-      <label class="button button-primary" for="file-input">CSV / JSON laden</label>
+      <button class="button button-primary" id="tracker-button" type="button" title="Daten aus dem Tracker laden (gleicher Browser)">Tracker</button>
+      <label class="button" for="file-input" title="CSV- oder JSON-Datei laden">CSV/JSON</label>
       <input type="file" id="file-input" accept=".csv,.json,text/csv,application/json" hidden>
-      <button class="button" id="demo-button" type="button">Beispieldaten</button>
-      <button class="button" id="tracker-button" type="button">Aus Tracker laden</button>
+      <button class="button" id="demo-button" type="button" title="Beispieldaten anzeigen">Beispiel</button>
     </div>
 
     <div class="import-status" id="import-status" role="status" aria-live="polite">
@@ -26,17 +29,11 @@
     </div>
   </header>
 
-  <div class="update-banner" id="update-banner" hidden>
-    <span>Neue Version verfügbar</span>
-    <button class="button" id="update-reload" type="button">Jetzt aktualisieren</button>
+  <div id="update-toast" class="update-toast" role="status" aria-live="polite">
+    <span class="update-toast__text">Neue Version verfügbar</span>
+    <button type="button" id="btn-reload" class="update-toast__btn">Neu laden</button>
+    <button type="button" id="btn-dismiss-update" class="update-toast__close" aria-label="Hinweis schließen">✕</button>
   </div>
-
-  <nav class="nav" aria-label="Ansichten">
-    <button class="nav-button is-active" data-view="heatmap" type="button">Heatmap</button>
-    <button class="nav-button" data-view="risk" type="button">Crash-Risiko</button>
-    <button class="nav-button" data-view="trend" type="button">Trend</button>
-    <button class="nav-button" data-view="help" type="button">Hilfe</button>
-  </nav>
 
   <main>
     <!-- TREND -->
@@ -45,7 +42,10 @@
         <h2>Trend</h2>
         <p class="hint">Ein einzelner Messwert über die Zeit. Lücken bleiben als Lücken sichtbar (keine falschen Nullen).</p>
 
-        <div class="chip-groups" id="trend-chips" role="group" aria-label="Messwert auswählen"></div>
+        <details class="chip-panel" id="chip-panel">
+          <summary id="chip-summary">Wert wählen</summary>
+          <div class="chip-groups" id="trend-chips" role="group" aria-label="Messwert auswählen"></div>
+        </details>
 
         <label class="toggle-row">
           <input type="checkbox" id="baseline-toggle" checked>
@@ -55,6 +55,7 @@
         <div class="chart-wrap">
           <canvas id="trend-canvas" role="img" aria-label="Zeitreihen-Diagramm des gewählten Messwerts"></canvas>
         </div>
+        <div class="range-row" id="range-chips" role="group" aria-label="Zeitraum wählen"></div>
         <div class="chart-readout" id="trend-readout" aria-live="polite"></div>
       </div>
     </section>
@@ -119,27 +120,39 @@
           <li>Leere Felder werden als Lücke behandelt (nicht als 0).</li>
           <li>Dezimalkomma wird korrekt gelesen (z. B. 7,5 h).</li>
           <li>Skalenrichtung: Alle Skalen 0–4 (Symptome, Belastung, Pacing, Arbeitsfähigkeit, Teilhabe) = höher ist schlechter. Nur Zustand (0–10) und Bell (0–100) = höher ist besser.</li>
+          <li>Ein kleines ▲ im Trend markiert den Tag, an dem ein akuter Crash eingetragen wurde („Crash-Beginn jetzt eintragen" im Tracker).</li>
         </ul>
+
+        <h3>Darstellung</h3>
+        <label class="toggle-row">
+          <input type="checkbox" id="font-toggle">
+          <span>Große Schrift</span>
+        </label>
 
         <h3>Wichtiger medizinischer Hinweis</h3>
         <p>Diese Anwendung dient ausschließlich der Übersicht und Orientierung. Die PEM-typische Verzögerung (12–72 h) kann dazu führen, dass sich ein Crash erst Tage nach einer Belastung zeigt. Die Risiko-Anzeige ist bewusst vorsichtig und kann einen bevorstehenden Crash nicht sicher vorhersagen.</p>
 
         <h3>Weitere Informationen</h3>
         <ul class="doc-links">
-          <li><a href="./BEDIENUNGSANLEITUNG.md" target="_blank" rel="noopener noreferrer">Bedienungsanleitung</a></li>
-          <li><a href="./ERLAEUTERUNGEN.md" target="_blank" rel="noopener noreferrer">Fachliche Grundlagen & Regelwerk</a></li>
-          <li><a href="./DATENMODELL.md" target="_blank" rel="noopener noreferrer">Datenmodell</a></li>
-          <li><a href="./FAQ.md" target="_blank" rel="noopener noreferrer">Häufige Fragen</a></li>
+          <li><a href="https://github.com/junk495/ME.CFS/wiki/Bedienungsanleitung-Graph" target="_blank" rel="noopener noreferrer">Bedienungsanleitung</a></li>
+          <li><a href="https://github.com/junk495/ME.CFS/wiki/Erlaeuterungen" target="_blank" rel="noopener noreferrer">Fachliche Grundlagen & Regelwerk</a></li>
+          <li><a href="https://github.com/junk495/ME.CFS/wiki/Datenmodell" target="_blank" rel="noopener noreferrer">Datenmodell</a></li>
+          <li><a href="https://github.com/junk495/ME.CFS/wiki/FAQ-Graph" target="_blank" rel="noopener noreferrer">Häufige Fragen</a></li>
           <li><a href="./LICENSE.md" target="_blank" rel="noopener noreferrer">Lizenz & Haftungsausschluss</a></li>
         </ul>
+        <div class="app-version" id="app-version"></div>
       </div>
     </section>
   </main>
 
-  <footer class="app-footer">
-    <span>Lokale Auswertung · keine Datenübertragung</span>
-  </footer>
+  <nav class="tab-bar" aria-label="Ansichten">
+    <button class="tab is-active" data-view="heatmap" type="button">Heatmap</button>
+    <button class="tab" data-view="risk" type="button">Crash-Risiko</button>
+    <button class="tab" data-view="trend" type="button">Trend</button>
+    <button class="tab" data-view="help" type="button">Hilfe</button>
+  </nav>
 
+  <script src="core.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

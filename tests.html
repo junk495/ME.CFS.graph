@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ME.CFS.graph – Tests (nur Entwicklung)</title>
+  <style>
+    body { font-family: monospace; margin: 2rem; background: #16181d; color: #e8eaf0; line-height: 1.5; }
+    h1 { font-size: 1.2rem; }
+    ul { list-style: none; padding: 0; }
+    .pass { color: #6fbf8b; }
+    .fail { color: #d97c7c; }
+    .summary { margin-top: 1rem; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <h1>core.js – Tests</h1>
+  <p>Diese Seite ist nur für die Entwicklung gedacht. Sie ist nicht Teil der App und wird nicht im Service Worker gecacht.</p>
+  <ul id="results"></ul>
+  <script src="core.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      var results = document.getElementById('results');
+      var failures = 0;
+      var total = 0;
+      function check(name, actual, expected) {
+        total++;
+        var ok = JSON.stringify(actual) === JSON.stringify(expected);
+        var li = document.createElement('li');
+        if (ok) { li.className = 'pass'; li.textContent = '✓ ' + name; }
+        else { failures++; li.className = 'fail'; li.textContent = '✗ ' + name + ' — erwartet ' + JSON.stringify(expected) + ', erhalten ' + JSON.stringify(actual); }
+        results.appendChild(li);
+      }
+      var pn = MECFS_core.parseNumber;
+      var pcs = MECFS_core.parseCSVLine;
+      check('parseNumber "7,5"', pn('7,5'), 7.5);
+      check('parseNumber "1.234,56"', pn('1.234,56'), 1234.56);
+      check('parseNumber ""', pn(''), null);
+      check('parseNumber null', pn(null), null);
+      check('parseNumber 42', pn(42), 42);
+      check('parseCSVLine einfach', pcs('a;b;c'), ['a', 'b', 'c']);
+      check('parseCSVLine quoted', pcs('a;"b;c";d'), ['a', 'b;c', 'd']);
+      check('parseCSVLine escaped', pcs('"a""b"'), ['a"b']);
+      check('median ungerade', MECFS_core.median([1, 3, 2]), 2);
+      check('median gerade', MECFS_core.median([1, 2, 3, 4]), 2.5);
+      check('mean', MECFS_core.mean([1, 2, 3]), 2);
+      check('norm BOM', MECFS_core.norm('\uFEFFDatum'), 'Datum');
+      check('parseDate gültig', MECFS_core.parseDate('2026-09-12') !== null, true);
+      check('parseDate ungültig', MECFS_core.parseDate('12.09.2026'), null);
+      check('parseDate leer', MECFS_core.parseDate(''), null);
+      var summary = document.createElement('p');
+      summary.className = 'summary ' + (failures ? 'fail' : 'pass');
+      summary.textContent = total + ' Tests, ' + failures + ' Fehler.';
+      document.body.insertBefore(summary, results.nextSibling);
+    })();
+  </script>
+</body>
+</html>
