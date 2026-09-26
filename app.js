@@ -223,6 +223,39 @@
     { value: 'all', label: 'Alle' }
   ];
 
+  // Farbpaletten: dunkel (App) und hell (Druck/PDF-Bericht).
+  var PALETTES = {
+    dark: {
+      grid: 'rgba(255,255,255,0.08)',
+      axis: 'rgba(255,255,255,0.18)',
+      text: '#a7adba',
+      baseline: '#d9b65c',
+      crash: '#e08a5a',
+      line: '#7fb3d5',
+      emptyCell: '#20232a',
+      heatScale: null
+    },
+    light: {
+      grid: 'rgba(0,0,0,0.12)',
+      axis: 'rgba(0,0,0,0.35)',
+      text: '#3a3f46',
+      baseline: '#8a6d1f',
+      crash: '#b5522a',
+      line: '#1f6f9f',
+      emptyCell: '#e8e8e8',
+      heatScale: [
+        [0, 208, 216, 222],
+        [1, 150, 182, 166],
+        [2, 214, 192, 122],
+        [3, 214, 150, 118],
+        [4, 200, 108, 96]
+      ]
+    }
+  };
+
+  // Metriken, die im PDF-Bericht als Verlaufs-Diagramm erscheinen.
+  var REPORT_METRICS = ['zustand_0_10', 'bell_0_100', 'fatigue_0_4', 'pem_heute_0_4', 'belastung_koerperlich_0_4', 'belastung_kognitiv_0_4', 'belastung_reiz_0_4'];
+
   function fmtShort(ts) {
     return new Date(ts).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
   }
@@ -635,6 +668,7 @@
     if (name === 'trend') renderTrend();
     else if (name === 'heatmap') renderHeatmap();
     else if (name === 'risk') renderRisk();
+    else if (name === 'report') renderReport();
   }
 
   // ---------------------------------------------------------------------------
@@ -726,28 +760,12 @@
   // Trend-Diagramm
   // ---------------------------------------------------------------------------
 
-  function renderTrend() {
-    var canvas = document.getElementById('trend-canvas');
-    var readout = document.getElementById('trend-readout');
-
-    if (!records.length) {
-      var empty = setupCanvas(canvas, 220);
-      empty.ctx.fillStyle = '#a7adba';
-      empty.ctx.font = '14px system-ui, sans-serif';
-      empty.ctx.textAlign = 'center';
-      empty.ctx.fillText('Noch keine Daten geladen', empty.width / 2, empty.height / 2);
-      readout.textContent = 'Daten oben über „Tracker", „CSV/JSON" oder „Beispiel" laden.';
-      return;
-    }
-
-    var d = setupCanvas(canvas, 340);
-    var ctx = d.ctx, W = d.width, H = d.height;
+  function drawTrend(ctx, W, H, metric, viewRecords, showBaseline, palette) {
     var padL = 42, padR = 12, padT = 16, padB = 40;
 
-    var viewRecords = visibleRecords();
-    var allValues = records.map(function (r) { return getMetricValue(r, selectedMetric); });
-    var values = viewRecords.map(function (r) { return getMetricValue(r, selectedMetric); });
-    var range = yRangeFor(selectedMetric, values);
+    var allValues = records.map(function (r) { return getMetricValue(r, metric); });
+    var values = viewRecords.map(function (r) { return getMetricValue(r, metric); });
+    var range = yRangeFor(metric, values);
 
     var plotW = W - padL - padR;
     var plotH = H - padT - padB;
@@ -768,8 +786,8 @@
     ctx.clearRect(0, 0, W, H);
 
     // Raster + Y-Achse
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-    ctx.fillStyle = '#a7adba';
+    ctx.strokeStyle = palette.grid;
+    ctx.fillStyle = palette.text;
     ctx.font = '11px system-ui, sans-serif';
     ctx.textAlign = 'right';
     ctx.lineWidth = 1;
@@ -797,26 +815,26 @@
     ctx.fillText(fmtShort(viewRecords[viewRecords.length - 1].dateTs), lastX, H - padB + 16);
 
     // Baseline (Median über alle vorhandenen Werte)
-    if (baselineOn) {
+    if (showBaseline) {
       var baseVals = allValues.filter(function (v) { return typeof v === 'number'; });
       var med = median(baseVals);
       if (med !== null && baseVals.length >= 2) {
         var by = yFor(med);
-        ctx.strokeStyle = '#d9b65c';
+        ctx.strokeStyle = palette.baseline;
         ctx.setLineDash([5, 4]);
         ctx.beginPath();
         ctx.moveTo(padL, by);
         ctx.lineTo(W - padR, by);
         ctx.stroke();
         ctx.setLineDash([]);
-        ctx.fillStyle = '#d9b65c';
+        ctx.fillStyle = palette.baseline;
         ctx.textAlign = 'left';
         ctx.fillText('Baseline ' + fmtNumber(med), padL + 4, by - 4);
       }
     }
 
     // Achsenlinien
-    ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+    ctx.strokeStyle = palette.axis;
     ctx.setLineDash([]);
     ctx.beginPath();
     ctx.moveTo(padL, padT);
@@ -828,7 +846,7 @@
     for (var ci = 0; ci < viewRecords.length; ci++) {
       if (!isAcuteCrash(viewRecords[ci])) continue;
       var cx = xForDate(viewRecords[ci].dateTs);
-      ctx.fillStyle = '#e08a5a';
+      ctx.fillStyle = palette.crash;
       ctx.beginPath();
       ctx.moveTo(cx, padT + plotH);
       ctx.lineTo(cx - 3, padT + plotH + 7);
@@ -838,8 +856,8 @@
     }
 
     // Daten-Linie mit Lücken
-    var good = metricIsGood(selectedMetric);
-    var lineColor = '#7fb3d5';
+    var good = metricIsGood(metric);
+    var lineColor = palette.line;
 
     ctx.strokeStyle = lineColor;
     ctx.fillStyle = lineColor;
@@ -870,13 +888,32 @@
       ctx.fill();
     }
 
-    // Pointer-/Klick-Auswertung speichern
-    canvas._trendData = { records: viewRecords, values: values, xForDate: xForDate, padL: padL, padR: padR, good: good };
+    return { records: viewRecords, values: values, xForDate: xForDate, padL: padL, padR: padR, good: good };
+  }
 
-    // Standard-Ausgabe: letzter Wert
+  function renderTrend() {
+    var canvas = document.getElementById('trend-canvas');
+    var readout = document.getElementById('trend-readout');
+
+    if (!records.length) {
+      var empty = setupCanvas(canvas, 220);
+      empty.ctx.fillStyle = '#a7adba';
+      empty.ctx.font = '14px system-ui, sans-serif';
+      empty.ctx.textAlign = 'center';
+      empty.ctx.fillText('Noch keine Daten geladen', empty.width / 2, empty.height / 2);
+      readout.textContent = 'Daten oben über „Tracker", „CSV/JSON" oder „Beispiel" laden.';
+      return;
+    }
+
+    var d = setupCanvas(canvas, 340);
+    var viewRecords = visibleRecords();
+    var info = drawTrend(d.ctx, d.width, d.height, selectedMetric, viewRecords, baselineOn, PALETTES.dark);
+
+    canvas._trendData = { records: info.records, values: info.values, xForDate: info.xForDate, padL: info.padL, padR: info.padR, good: info.good };
+
     var lastVal = null, lastRec = null;
     for (var m = viewRecords.length - 1; m >= 0; m--) {
-      if (typeof values[m] === 'number') { lastVal = values[m]; lastRec = viewRecords[m]; break; }
+      if (typeof info.values[m] === 'number') { lastVal = info.values[m]; lastRec = viewRecords[m]; break; }
     }
     if (lastRec) {
       readout.textContent = 'Zeitraum: ' + rangeLabel() + ' · Zuletzt: ' + fmtFull(lastRec.dateTs) + ' · ' + metricLabel(selectedMetric) + ' ' + fmtNumber(lastVal);
@@ -912,28 +949,11 @@
   // Heatmap
   // ---------------------------------------------------------------------------
 
-  function renderHeatmap() {
-    var canvas = document.getElementById('heatmap-canvas');
-    var readout = document.getElementById('heatmap-readout');
-
-    if (!records.length || !DOMAINS.length) {
-      var empty = setupCanvas(canvas, 220);
-      empty.ctx.fillStyle = '#a7adba';
-      empty.ctx.font = '14px system-ui, sans-serif';
-      empty.ctx.textAlign = 'center';
-      empty.ctx.fillText('Noch keine Daten geladen', empty.width / 2, empty.height / 2);
-      readout.textContent = 'Daten oben über „Tracker", „CSV/JSON" oder „Beispiel" laden.';
-      return;
-    }
-
+  function drawHeatmap(ctx, W, H, palette) {
     var rowH = 30;
     var leftW = 96;
     var padT = 10;
     var padB = 56;
-    var cssH = padT + DOMAINS.length * rowH + padB;
-    var d = setupCanvas(canvas, cssH);
-    var ctx = d.ctx, W = d.width, H = d.height;
-
     var plotW = W - leftW - 8;
 
     function xForDate(ts) {
@@ -949,7 +969,7 @@
     var cellW = plotW / records.length;
     DOMAINS.forEach(function (domain, r) {
       var y = padT + r * rowH;
-      ctx.fillStyle = '#a7adba';
+      ctx.fillStyle = palette.text;
       ctx.font = '12px system-ui, sans-serif';
       ctx.textAlign = 'right';
       ctx.fillText(domain.label, leftW - 6, y + rowH / 2 + 4);
@@ -960,9 +980,9 @@
         var cellX = x;
         var cellW2 = Math.max(cellW - 1, 3);
         if (val === null) {
-          ctx.fillStyle = '#20232a';
+          ctx.fillStyle = palette.emptyCell;
         } else {
-          ctx.fillStyle = colorForScale(val);
+          ctx.fillStyle = colorForScale(val, palette);
         }
         ctx.fillRect(cellX, y + 2, cellW2, rowH - 4);
       }
@@ -970,7 +990,7 @@
 
     // Datums-Beschriftung unten
     var dateY = padT + DOMAINS.length * rowH + 16;
-    ctx.fillStyle = '#a7adba';
+    ctx.fillStyle = palette.text;
     ctx.font = '11px system-ui, sans-serif';
     ctx.textAlign = 'center';
     var labelStep = Math.max(1, Math.ceil(records.length / 8));
@@ -983,21 +1003,44 @@
     ctx.textAlign = 'left';
     ctx.fillText('0 (niedrig)', leftW, legendY);
     for (var g = 0; g <= 4; g++) {
-      ctx.fillStyle = colorForScale(g);
+      ctx.fillStyle = colorForScale(g, palette);
       ctx.fillRect(leftW + 64 + g * 22, legendY - 11, 18, 12);
     }
-    ctx.fillStyle = '#a7adba';
+    ctx.fillStyle = palette.text;
     ctx.fillText('4 (hoch)', leftW + 64 + 5 * 22 + 6, legendY);
 
-    // Klick-Auswertung
-    canvas._heatmapData = { records: records, xForDate: xForDate, cellW: cellW };
+    return { xForDate: xForDate, cellW: cellW };
+  }
+
+  function renderHeatmap() {
+    var canvas = document.getElementById('heatmap-canvas');
+    var readout = document.getElementById('heatmap-readout');
+
+    if (!records.length || !DOMAINS.length) {
+      var empty = setupCanvas(canvas, 220);
+      empty.ctx.fillStyle = '#a7adba';
+      empty.ctx.font = '14px system-ui, sans-serif';
+      empty.ctx.textAlign = 'center';
+      empty.ctx.fillText('Noch keine Daten geladen', empty.width / 2, empty.height / 2);
+      readout.textContent = 'Daten oben über „Tracker", „CSV/JSON" oder „Beispiel" laden.';
+      return;
+    }
+
+    var rowH = 30;
+    var padT = 10;
+    var padB = 56;
+    var cssH = padT + DOMAINS.length * rowH + padB;
+    var d = setupCanvas(canvas, cssH);
+
+    var info = drawHeatmap(d.ctx, d.width, d.height, PALETTES.dark);
+    canvas._heatmapData = { records: records, xForDate: info.xForDate, cellW: info.cellW };
 
     readout.textContent = 'Auf eine Spalte tippen, um den Tag aufzulisten.';
   }
 
-  function colorForScale(v) {
-    // reizarme Farbskala: dunkel (0) -> warm/rot (4)
-    var stops = [
+  function colorForScale(v, palette) {
+    // reizarme Farbskala: dunkel (0) -> warm/rot (4); für den Druck heller
+    var stops = (palette && palette.heatScale) ? palette.heatScale : [
       [0, 42, 61, 85],
       [1, 74, 106, 90],
       [2, 138, 115, 80],
@@ -1192,6 +1235,47 @@
     return { level: level, label: label, summary: summary, points: points, factors: factors };
   }
 
+  function riskFactorsHtml(factors) {
+    var items = factors.map(function (f) {
+      return '<li>' + f.value + ': ' + f.text + ' (' + f.points + ' Punkt' + (f.points === 1 ? '' : 'e') + ')</li>';
+    });
+    return '<ul class="risk-factors">' + items.join('') + '</ul>';
+  }
+
+  function riskTableHtml() {
+    var rows = [];
+    ['zustand_0_10', 'bell_0_100', 'fatigue_0_4', 'pem_heute_0_4', 'belastung_koerperlich_0_4', 'belastung_kognitiv_0_4', 'belastung_reiz_0_4', 'schlafqualitaet_0_4', 'liegezeit_h', 'schritte', 'puls_ruhe', 'hrv'].forEach(function (key) {
+      var s = metricStats(key);
+      rows.push({ label: metricLabel(key), recent: s.recentMean, base: s.baseMedian, dir: FIELDS_BY_KEY[key].dir });
+    });
+
+    var html = '<table class="risk-table"><thead><tr><th>Wert</th><th class="num">Baseline</th><th class="num">Ø 3 Tage</th><th class="num">Veränderung</th></tr></thead><tbody>';
+    rows.forEach(function (r) {
+      var deltaTxt = '–';
+      var cls = 'delta-flat';
+      if (r.recent !== null && r.base !== null) {
+        var numDelta = r.recent - r.base;
+        var sign = numDelta > 0.05 ? '↑' : (numDelta < -0.05 ? '↓' : '→');
+        deltaTxt = sign + ' ' + fmtNumber(Math.abs(numDelta));
+        if (Math.abs(numDelta) < 0.05) {
+          cls = 'delta-flat';
+        } else if (r.dir === 'better') {
+          cls = numDelta < 0 ? 'delta-up' : 'delta-down';
+        } else if (r.dir === 'worse') {
+          cls = numDelta > 0 ? 'delta-up' : 'delta-down';
+        } else {
+          cls = 'delta-flat';
+        }
+      }
+      html += '<tr><td>' + r.label + '</td>' +
+        '<td class="num">' + (r.base !== null ? fmtNumber(r.base) : '–') + '</td>' +
+        '<td class="num">' + (r.recent !== null ? fmtNumber(r.recent) : '–') + '</td>' +
+        '<td class="num ' + cls + '">' + deltaTxt + '</td></tr>';
+    });
+    html += '</tbody></table>';
+    return html;
+  }
+
   function renderRisk() {
     var empty = document.getElementById('risk-empty');
     var content = document.getElementById('risk-content');
@@ -1227,45 +1311,158 @@
       '<div class="risk-label">' + risk.points + ' Warnpunkte (max. 10)</div>';
     summary.textContent = risk.summary;
 
-    factorList.innerHTML = '';
-    risk.factors.forEach(function (f) {
-      var li = document.createElement('li');
-      li.textContent = f.value + ': ' + f.text + ' (' + f.points + ' Punkt' + (f.points === 1 ? '' : 'e') + ')';
-      factorList.appendChild(li);
-    });
+    factorList.innerHTML = riskFactorsHtml(risk.factors);
 
     // Kennzahlen-Tabelle
-    var rows = [];
-    ['zustand_0_10', 'bell_0_100', 'fatigue_0_4', 'pem_heute_0_4', 'belastung_koerperlich_0_4', 'belastung_kognitiv_0_4', 'belastung_reiz_0_4', 'schlafqualitaet_0_4', 'liegezeit_h', 'schritte', 'puls_ruhe', 'hrv'].forEach(function (key) {
-      var s = metricStats(key);
-      rows.push({ label: metricLabel(key), recent: s.recentMean, base: s.baseMedian, dir: FIELDS_BY_KEY[key].dir });
+    tableDiv.innerHTML = riskTableHtml();
+  }
+
+  // ---------------------------------------------------------------------------
+  // PDF-Bericht (Arztbericht)
+  // ---------------------------------------------------------------------------
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function hasValue(v) {
+    return v !== null && v !== undefined && String(v).trim() !== '';
+  }
+
+  function reportChart(width, height, drawFn) {
+    var scale = 2;
+    var canvas = document.createElement('canvas');
+    canvas.width = Math.round(width * scale);
+    canvas.height = Math.round(height * scale);
+    var ctx = canvas.getContext('2d');
+    ctx.scale(scale, scale);
+    drawFn(ctx, width, height);
+    return canvas.toDataURL('image/png');
+  }
+
+  function domainSummaryHtml() {
+    var rows = DOMAINS.map(function (d) {
+      var vals = [];
+      records.forEach(function (r) {
+        var v = domainMean(r, d);
+        if (v !== null) vals.push(v);
+      });
+      if (!vals.length) {
+        return '<tr><td>' + d.label + '</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">0</td></tr>';
+      }
+      var mn = Math.min.apply(null, vals);
+      var mx = Math.max.apply(null, vals);
+      return '<tr><td>' + d.label + '</td>' +
+        '<td class="num">' + fmtNumber(mean(vals)) + '</td>' +
+        '<td class="num">' + fmtNumber(median(vals)) + '</td>' +
+        '<td class="num">' + fmtNumber(mn) + '</td>' +
+        '<td class="num">' + fmtNumber(mx) + '</td>' +
+        '<td class="num">' + vals.length + '</td></tr>';
+    }).join('');
+    return '<div class="risk-table-wrap"><table class="risk-table report-table">' +
+      '<thead><tr><th>Bereich</th><th class="num">Ø</th><th class="num">Median</th><th class="num">Min</th><th class="num">Max</th><th class="num">Tage</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>';
+  }
+
+  function pemEpisodesHtml() {
+    var items = records.filter(function (r) {
+      return hasValue(r.pem_gesamt_0_4) || hasValue(r.pem_ausloeser) || hasValue(r.pem_dauer_h) ||
+        hasValue(r.pem_verzoegerung_h) || hasValue(r.pem_belastungsdatum);
+    });
+    if (!items.length) return '<p>Keine PEM-Episoden erfasst.</p>';
+
+    var rows = items.map(function (r) {
+      var ausloeser = hasValue(r.pem_ausloeser) ? escapeHtml(String(r.pem_ausloeser)) : '–';
+      var belastung = hasValue(r.pem_belastungsdatum) ? escapeHtml(String(r.pem_belastungsdatum)) : '–';
+      var verzoeg = hasValue(r.pem_verzoegerung_h) ? fmtNumber(r.pem_verzoegerung_h) + ' h' : '–';
+      var dauer = hasValue(r.pem_dauer_h) ? fmtNumber(r.pem_dauer_h) + ' h' : '–';
+      var schwere = hasValue(r.pem_gesamt_0_4) ? fmtNumber(r.pem_gesamt_0_4) + ' / 4' : '–';
+      var marker = isAcuteCrash(r) ? ' ⚡' : '';
+      return '<tr><td>' + fmtFull(r.dateTs) + marker + '</td><td>' + ausloeser + '</td>' +
+        '<td>' + belastung + '</td><td class="num">' + verzoeg + '</td>' +
+        '<td class="num">' + dauer + '</td><td class="num">' + schwere + '</td></tr>';
+    }).join('');
+
+    return '<div class="risk-table-wrap"><table class="risk-table report-table">' +
+      '<thead><tr><th>Datum</th><th>Auslöser</th><th>Belastung</th><th class="num">Verzögerung</th><th class="num">Dauer</th><th class="num">Schwere</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>';
+  }
+
+  function notesHtml() {
+    var notes = records.filter(function (r) { return hasValue(r.notiz); });
+    var kontext = records.filter(function (r) { return hasValue(r.kontext); });
+    if (!notes.length && !kontext.length) return '';
+
+    var html = '';
+    if (notes.length) {
+      html += '<h3>Notizen</h3><ul class="report-notes">' + notes.map(function (r) {
+        return '<li><strong>' + fmtFull(r.dateTs) + ':</strong> ' + escapeHtml(String(r.notiz)) + '</li>';
+      }).join('') + '</ul>';
+    }
+    if (kontext.length) {
+      html += '<h3>Kontext</h3><ul class="report-notes">' + kontext.map(function (r) {
+        return '<li><strong>' + fmtFull(r.dateTs) + ':</strong> ' + escapeHtml(String(r.kontext)) + '</li>';
+      }).join('') + '</ul>';
+    }
+    return html;
+  }
+
+  function renderReport() {
+    var content = document.getElementById('report-content');
+    if (!content) return;
+
+    if (!records.length) {
+      content.innerHTML = '<div class="report-empty">Noch keine Daten geladen. Öffne den Bericht am besten über den ME/CFS-Symptom-Tracker (Export → „Arztbericht (PDF) erstellen\").</div>';
+      return;
+    }
+
+    var first = records[0].dateTs;
+    var last = records[records.length - 1].dateTs;
+    var created = new Date();
+
+    var risk = computeRisk();
+    var riskHtml = '';
+    if (risk) {
+      riskHtml = '<h2>Crash-Risiko-Orientierung</h2>' +
+        '<div class="risk-gauge risk-' + risk.level + '">' +
+        '<div class="risk-label">Einschätzung</div>' +
+        '<div class="risk-level">' + risk.label + '</div>' +
+        '<div class="risk-label">' + risk.points + ' Warnpunkte (max. 10)</div>' +
+        '</div>' +
+        '<p class="risk-summary">' + risk.summary + '</p>' +
+        '<h3>Warum diese Einschätzung?</h3>' + riskFactorsHtml(risk.factors) +
+        '<h3>Kennzahlen (zuletzt vs. Baseline)</h3><div class="risk-table-wrap">' + riskTableHtml() + '</div>';
+    } else {
+      riskHtml = '<p>Für die Crash-Risiko-Einschätzung sind mindestens 3 Tage nötig.</p>';
+    }
+
+    var charts = REPORT_METRICS.map(function (key) {
+      var src = reportChart(720, 300, function (ctx, W, H) {
+        drawTrend(ctx, W, H, key, records, true, PALETTES.light);
+      });
+      return '<figure class="report-figure"><figcaption>' + metricLabel(key) + '</figcaption>' +
+        '<img src="' + src + '" alt="Verlauf: ' + metricLabel(key) + '"></figure>';
+    }).join('');
+
+    var heatH = 10 + DOMAINS.length * 30 + 56;
+    var heatSrc = reportChart(720, heatH, function (ctx, W, H) {
+      drawHeatmap(ctx, W, H, PALETTES.light);
     });
 
-    var html = '<table class="risk-table"><thead><tr><th>Wert</th><th class="num">Baseline</th><th class="num">Ø 3 Tage</th><th class="num">Veränderung</th></tr></thead><tbody>';
-    rows.forEach(function (r) {
-      var deltaTxt = '–';
-      var cls = 'delta-flat';
-      if (r.recent !== null && r.base !== null) {
-        var numDelta = r.recent - r.base;
-        var sign = numDelta > 0.05 ? '↑' : (numDelta < -0.05 ? '↓' : '→');
-        deltaTxt = sign + ' ' + fmtNumber(Math.abs(numDelta));
-        if (Math.abs(numDelta) < 0.05) {
-          cls = 'delta-flat';
-        } else if (r.dir === 'better') {
-          cls = numDelta < 0 ? 'delta-up' : 'delta-down';
-        } else if (r.dir === 'worse') {
-          cls = numDelta > 0 ? 'delta-up' : 'delta-down';
-        } else {
-          cls = 'delta-flat';
-        }
-      }
-      html += '<tr><td>' + r.label + '</td>' +
-        '<td class="num">' + (r.base !== null ? fmtNumber(r.base) : '–') + '</td>' +
-        '<td class="num">' + (r.recent !== null ? fmtNumber(r.recent) : '–') + '</td>' +
-        '<td class="num ' + cls + '">' + deltaTxt + '</td></tr>';
-    });
-    html += '</tbody></table>';
-    tableDiv.innerHTML = html;
+    var html = '';
+    html += '<div class="report-head"><h1>ME/CFS-Verlaufsbericht</h1>' +
+      '<p class="report-meta">Zeitraum: ' + fmtFull(first) + ' – ' + fmtFull(last) + ' · ' + records.length + ' Einträge · Erstellt am ' + fmtFull(created.getTime()) + '</p></div>';
+    html += riskHtml;
+    html += '<h2>Verlauf</h2>' + charts;
+    html += '<h2>Heatmap (Symptombereiche)</h2><figure class="report-figure"><img src="' + heatSrc + '" alt="Heatmap der Symptombereiche"></figure>';
+    html += '<h2>Symptombereiche (Zusammenfassung)</h2>' + domainSummaryHtml();
+    html += '<h2>PEM-Episoden</h2>' + pemEpisodesHtml();
+    html += notesHtml();
+    html += '<div class="disclaimer"><strong>Hinweis:</strong> Dieser Bericht wurde automatisch aus deinen selbst erfassten Daten erstellt und dient als Übersicht für medizinisches Fachpersonal. Er ersetzt keine ärztliche Diagnose oder Behandlung und ist kein Medizinprodukt.</div>';
+
+    content.innerHTML = html;
   }
 
   // ---------------------------------------------------------------------------
@@ -1331,6 +1528,13 @@
     renderTrend();
     renderHeatmap();
     renderRisk();
+
+    // PDF-Bericht: Druck-Button + Direktaufruf über den Hash #report (aus dem Tracker)
+    var printReport = document.getElementById('btn-print-report');
+    if (printReport) {
+      printReport.addEventListener('click', function () { window.print(); });
+    }
+    if (location.hash === '#report') switchView('report');
 
     if ('serviceWorker' in navigator) {
       var updateToast = document.getElementById('update-toast');

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#16181d">
-  <meta name="app-version" content="v2.8.0">
+  <meta name="app-version" content="v2.9.0">
   <meta name="description" content="ME.CFS.graph — lokale, grafische Auswertung der ME/CFS-Symptom-Tracker-Daten (CSV/JSON) mit Verlaufs- und Crash-Risiko-Orientierung.">
   <title>ME.CFS.graph</title>
   <link rel="manifest" href="manifest.json">
@@ -141,6 +141,16 @@
           <li><a href="./LICENSE.md" target="_blank" rel="noopener noreferrer">Lizenz & Haftungsausschluss</a></li>
         </ul>
         <div class="app-version" id="app-version"></div>
+      </div>
+    </section>
+
+    <!-- BERICHT (PDF-Arztbericht, nur über den Tracker-Link #report erreichbar) -->
+    <section id="view-report" class="view" hidden>
+      <div class="panel report-panel">
+        <div class="report-actions">
+          <button class="button button-primary" id="btn-print-report" type="button">Drucken / PDF speichern</button>
+        </div>
+        <div id="report-content"></div>
       </div>
     </section>
   </main>

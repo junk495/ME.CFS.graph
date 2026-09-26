@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.9.0 – 2026-09-26
+
+### Neu
+
+- **Arztbericht (PDF):** Neue Bericht-Ansicht, die aus den geladenen Daten eine übersichtliche, druckbare Zusammenfassung erstellt (Verlauf, Heatmap, Crash-Risiko, Symptombereiche, PEM-Episoden, Notizen). Erreichbar über den Tracker (Export → „Arztbericht (PDF) erstellen", öffnet die App mit `#report`) — kein neuer Tab in der App.
+
 ## v2.8.0 – 2026-09-13
 
 ### Geändert

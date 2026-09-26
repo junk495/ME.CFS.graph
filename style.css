@@ -483,3 +483,185 @@ li {
 .chip-panel .chip-groups {
   padding: 4px 12px 12px;
 }
+
+/* ---------------------------------------------------------------------------
+   PDF-Bericht (Arztbericht) – helles Dokument-Layout
+   --------------------------------------------------------------------------- */
+
+#view-report .report-panel {
+  background: #ffffff;
+  color: #1a1d23;
+  border-color: #d8dbe0;
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+#view-report .report-actions {
+  margin-bottom: 18px;
+  text-align: right;
+}
+
+#view-report .report-actions .button {
+  background: #1f6f9f;
+  border-color: #1f6f9f;
+  color: #ffffff;
+}
+
+#view-report .report-head h1 {
+  font-size: 1.5rem;
+  color: #1a1d23;
+  margin: 0 0 6px;
+}
+
+#view-report .report-meta {
+  color: #4a515c;
+  font-size: 0.92rem;
+  margin: 0 0 8px;
+}
+
+#view-report .report-empty {
+  color: #4a515c;
+  padding: 24px 0;
+}
+
+#view-report h2 {
+  font-size: 1.15rem;
+  margin: 28px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #d8dbe0;
+  color: #1a1d23;
+}
+
+#view-report h3 {
+  font-size: 1rem;
+  margin: 16px 0 6px;
+  color: #2a2f37;
+}
+
+#view-report .report-figure {
+  margin: 16px 0;
+}
+
+#view-report .report-figure figcaption {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #2a2f37;
+}
+
+#view-report .report-figure img {
+  width: 100%;
+  height: auto;
+  border: 1px solid #e2e5ea;
+  border-radius: 6px;
+}
+
+#view-report .report-table {
+  min-width: 0;
+  font-size: 0.9rem;
+}
+
+#view-report .report-notes {
+  margin: 6px 0 0;
+  padding-left: 20px;
+  color: #2a2f37;
+}
+
+#view-report .risk-gauge {
+  background: #f7f8fa;
+  border-color: #d8dbe0;
+}
+
+#view-report .risk-gauge .risk-label {
+  color: #4a515c;
+}
+
+#view-report .risk-gauge .risk-level {
+  color: #1a1d23;
+}
+
+#view-report .risk-gauge.risk-stable .risk-level { color: #2e7d4f; }
+#view-report .risk-gauge.risk-watch .risk-level { color: #9a7414; }
+#view-report .risk-gauge.risk-high .risk-level { color: #b33a3a; }
+
+#view-report .risk-summary {
+  color: #2a2f37;
+}
+
+#view-report .risk-factors {
+  color: #2a2f37;
+}
+
+#view-report .risk-table-wrap {
+  border-color: #d8dbe0;
+}
+
+#view-report .risk-table th {
+  color: #4a515c;
+  background: #f2f4f7;
+}
+
+#view-report .risk-table th,
+#view-report .risk-table td {
+  border-bottom-color: #d8dbe0;
+}
+
+#view-report .delta-up { color: #b33a3a; }
+#view-report .delta-down { color: #2e7d4f; }
+#view-report .delta-flat { color: #4a515c; }
+
+#view-report .disclaimer {
+  border-color: #d8dbe0;
+  background: #f7f8fa;
+  color: #4a515c;
+}
+
+/* ---------------------------------------------------------------------------
+   Druck (PDF) – nur den Bericht ausgeben
+   --------------------------------------------------------------------------- */
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000;
+  }
+
+  .app-header,
+  .tab-bar,
+  .import-area,
+  #update-toast,
+  #import-status {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+    max-width: none !important;
+  }
+
+  .view {
+    display: none !important;
+  }
+
+  #view-report {
+    display: block !important;
+  }
+
+  #view-report .report-panel {
+    border: none;
+    max-width: none;
+    padding: 0;
+  }
+
+  #view-report .report-actions {
+    display: none !important;
+  }
+
+  #view-report .report-figure,
+  #view-report .risk-table-wrap,
+  #view-report .risk-gauge,
+  #view-report .disclaimer {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
