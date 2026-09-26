@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#16181d">
-  <meta name="app-version" content="v2.9.0">
+  <meta name="app-version" content="v2.9.1">
   <meta name="description" content="ME.CFS.graph — lokale, grafische Auswertung der ME/CFS-Symptom-Tracker-Daten (CSV/JSON) mit Verlaufs- und Crash-Risiko-Orientierung.">
   <title>ME.CFS.graph</title>
   <link rel="manifest" href="manifest.json">
@@ -122,6 +122,10 @@
           <li>Skalenrichtung: Alle Skalen 0–4 (Symptome, Belastung, Pacing, Arbeitsfähigkeit, Teilhabe) = höher ist schlechter. Nur Zustand (0–10) und Bell (0–100) = höher ist besser.</li>
           <li>Ein kleines ▲ im Trend markiert den Tag, an dem ein akuter Crash eingetragen wurde („Crash-Beginn jetzt eintragen" im Tracker).</li>
         </ul>
+
+        <h3>Arztbericht (PDF)</h3>
+        <p>Erstellt eine druckbare Zusammenfassung deiner Daten (Verlauf, Heatmap, Crash-Risiko, Symptombereiche, PEM-Episoden, Notizen) für deinen Arzt.</p>
+        <button class="button" id="btn-open-report" type="button">Bericht öffnen</button>
 
         <h3>Darstellung</h3>
         <label class="toggle-row">

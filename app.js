@@ -446,6 +446,9 @@
     renderTrend();
     renderHeatmap();
     renderRisk();
+    // Falls gerade die Bericht-Ansicht aktiv ist, diese ebenfalls neu aufbauen.
+    var active = document.querySelector('.view:not([hidden])');
+    if (active && active.id === 'view-report') renderReport();
   }
 
   function updateImportStatus() {
@@ -1533,6 +1536,10 @@
     var printReport = document.getElementById('btn-print-report');
     if (printReport) {
       printReport.addEventListener('click', function () { window.print(); });
+    }
+    var openReport = document.getElementById('btn-open-report');
+    if (openReport) {
+      openReport.addEventListener('click', function () { switchView('report'); });
     }
     if (location.hash === '#report') switchView('report');
 

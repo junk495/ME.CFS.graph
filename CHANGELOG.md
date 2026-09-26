@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.9.1 – 2026-09-26
+
+### Geändert
+
+- **Arztbericht leichter erreichbar:** Der Bericht lässt sich jetzt auch direkt in der App öffnen (Hilfe → „Bericht öffnen\"), nicht nur über den Tracker-Link.
+- **Bericht aktualisiert sich:** Wird der Bericht angezeigt und dann Daten geladen, baut er sich jetzt neu auf (statt leer zu bleiben).
+
 ## v2.9.0 – 2026-09-26
 
 ### Neu
