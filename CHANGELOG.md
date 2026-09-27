@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.9.2 – 2026-09-26
+
+### Neu
+
+- **Verweis auf ME.CFS.report:** In der Hilfe-Ansicht und im Schnell-Bericht gibt es jetzt einen Link zum ausführlichen Bericht-Tool ME.CFS.report.
+
 ## v2.9.1 – 2026-09-26
 
 ### Geändert

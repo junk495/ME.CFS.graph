@@ -525,6 +525,18 @@ li {
   padding: 24px 0;
 }
 
+#view-report .report-hint {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid #e2e5ea;
+  color: #4a515c;
+  font-size: 0.9rem;
+}
+
+#view-report .report-hint a {
+  color: #1f6f9f;
+}
+
 #view-report h2 {
   font-size: 1.15rem;
   margin: 28px 0 10px;
@@ -654,6 +666,10 @@ li {
   }
 
   #view-report .report-actions {
+    display: none !important;
+  }
+
+  #view-report .report-hint {
     display: none !important;
   }
 
