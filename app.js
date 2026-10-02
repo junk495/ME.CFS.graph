@@ -444,6 +444,7 @@
     renderTrendChips();
     renderRangeChips();
     renderTrend();
+    heatmapSelectedIndex = -1;
     renderHeatmap();
     renderRisk();
     // Falls gerade die Bericht-Ansicht aktiv ist, diese ebenfalls neu aufbauen.
@@ -952,7 +953,9 @@
   // Heatmap
   // ---------------------------------------------------------------------------
 
-  function drawHeatmap(ctx, W, H, palette) {
+  var heatmapSelectedIndex = -1;
+
+  function drawHeatmap(ctx, W, H, palette, selectedIndex) {
     var rowH = 30;
     var leftW = 96;
     var padT = 10;
@@ -1012,12 +1015,25 @@
     ctx.fillStyle = palette.text;
     ctx.fillText('4 (hoch)', leftW + 64 + 5 * 22 + 6, legendY);
 
+    // Dezente Markierung: kleines Dreieck über der ausgewählten Spalte
+    if (selectedIndex >= 0 && selectedIndex < records.length) {
+      var tx = xForDate(records[selectedIndex].dateTs) + cellW / 2;
+      ctx.fillStyle = '#7fb3d5';
+      ctx.beginPath();
+      ctx.moveTo(tx - 5, 1);
+      ctx.lineTo(tx + 5, 1);
+      ctx.lineTo(tx, 9);
+      ctx.closePath();
+      ctx.fill();
+    }
+
     return { xForDate: xForDate, cellW: cellW };
   }
 
   function renderHeatmap() {
     var canvas = document.getElementById('heatmap-canvas');
     var readout = document.getElementById('heatmap-readout');
+    var nav = document.getElementById('heatmap-nav');
 
     if (!records.length || !DOMAINS.length) {
       var empty = setupCanvas(canvas, 220);
@@ -1026,6 +1042,7 @@
       empty.ctx.textAlign = 'center';
       empty.ctx.fillText('Noch keine Daten geladen', empty.width / 2, empty.height / 2);
       readout.textContent = 'Daten oben über „Tracker", „CSV/JSON" oder „Beispiel" laden.';
+      if (nav) nav.hidden = true;
       return;
     }
 
@@ -1035,10 +1052,11 @@
     var cssH = padT + DOMAINS.length * rowH + padB;
     var d = setupCanvas(canvas, cssH);
 
-    var info = drawHeatmap(d.ctx, d.width, d.height, PALETTES.dark);
+    var info = drawHeatmap(d.ctx, d.width, d.height, PALETTES.dark, heatmapSelectedIndex);
     canvas._heatmapData = { records: records, xForDate: info.xForDate, cellW: info.cellW };
 
-    readout.textContent = 'Auf eine Spalte tippen, um den Tag aufzulisten.';
+    readout.textContent = heatmapReadoutText(heatmapSelectedIndex);
+    if (nav) nav.hidden = (heatmapSelectedIndex < 0);
   }
 
   function colorForScale(v, palette) {
@@ -1061,9 +1079,31 @@
     return 'rgb(' + r + ',' + g + ',' + bl + ')';
   }
 
+  function heatmapReadoutText(idx) {
+    var canvas = document.getElementById('heatmap-canvas');
+    var d = canvas._heatmapData;
+    if (!d || idx < 0 || idx >= d.records.length) return 'Auf eine Spalte tippen, um den Tag aufzulisten.';
+    var rec = d.records[idx];
+    var parts = [fmtFull(rec.dateTs)];
+    DOMAINS.forEach(function (domain) {
+      var v = domainMean(rec, domain);
+      parts.push(domain.label + ': ' + (v === null ? '–' : fmtNumber(v)));
+    });
+    return parts.join('  ·  ');
+  }
+
+  function heatmapStep(delta) {
+    var canvas = document.getElementById('heatmap-canvas');
+    var d = canvas._heatmapData;
+    if (!d || !d.records.length) return;
+    var idx = (heatmapSelectedIndex < 0) ? 0 : heatmapSelectedIndex + delta;
+    idx = Math.max(0, Math.min(d.records.length - 1, idx));
+    heatmapSelectedIndex = idx;
+    renderHeatmap();
+  }
+
   function heatmapPointer(e) {
     var canvas = document.getElementById('heatmap-canvas');
-    var readout = document.getElementById('heatmap-readout');
     var d = canvas._heatmapData;
     if (!d) return;
 
@@ -1077,13 +1117,8 @@
     }
     if (idx < 0) return;
 
-    var rec = d.records[idx];
-    var parts = [fmtFull(rec.dateTs)];
-    DOMAINS.forEach(function (domain) {
-      var v = domainMean(rec, domain);
-      parts.push(domain.label + ': ' + (v === null ? '–' : fmtNumber(v)));
-    });
-    readout.textContent = parts.join('  ·  ');
+    heatmapSelectedIndex = idx;
+    renderHeatmap();
   }
 
   // ---------------------------------------------------------------------------
@@ -1525,6 +1560,8 @@
     document.getElementById('trend-canvas').addEventListener('click', trendPointer);
     document.getElementById('trend-canvas').addEventListener('pointermove', trendPointer);
     document.getElementById('heatmap-canvas').addEventListener('click', heatmapPointer);
+    document.getElementById('heatmap-prev').addEventListener('click', function () { heatmapStep(-1); });
+    document.getElementById('heatmap-next').addEventListener('click', function () { heatmapStep(1); });
 
     renderTrendChips();
     renderRangeChips();

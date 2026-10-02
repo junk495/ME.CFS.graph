@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.9.3 – 2026-09-26
+
+### Neu
+
+- **Heatmap-Tagesnavigation:** Nach dem Antippen einer Spalte erscheinen unter der Heatmap zwei Pfeile (◀ ▶), mit denen du tagweise vor-/zurückblättern kannst. Die ausgewählte Spalte wird dezent durch ein kleines Dreieck markiert.
+
 ## v2.9.2 – 2026-09-26
 
 ### Neu
